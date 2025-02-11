@@ -12,8 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tasks', function (Blueprint $table) {
-            $table->foreignId('category_id')->constrained();
-            $table->foreignId('status_id')->constrained('status','id');
+            $table->foreignId('category_id')->constrained('categories','id');
+            $table->string('status');
+            $table->foreign('status')->references('name')->on('status');
             $table->string('priority');
             $table->foreign('priority')->references('name')->on('priority');
             $table->foreignId('user_id')->constrained();
@@ -27,7 +28,7 @@ return new class extends Migration
     {
         Schema::table('tasks', function (Blueprint $table) {
             $table->dropForeign(['category_id']);
-            $table->dropForeign(['status_id']);
+            $table->dropForeign(['status']);
             $table->dropForeign(['priority']);
             $table->dropForeign(['user_id']);
         });
