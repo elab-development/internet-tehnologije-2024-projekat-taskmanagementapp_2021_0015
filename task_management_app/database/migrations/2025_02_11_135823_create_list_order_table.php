@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('list_order', function (Blueprint $table) {
-            $table->foreignId('task_list_id')->constrained('task_list','id');
+            $table->foreignId('task_list_id')->constrained('task_lists','id');
             $table->foreignId('task_id')->constrained();
             $table->integer('num');
         });

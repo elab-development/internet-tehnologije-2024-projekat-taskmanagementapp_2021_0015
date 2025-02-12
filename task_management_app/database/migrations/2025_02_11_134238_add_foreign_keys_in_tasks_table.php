@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::table('tasks', function (Blueprint $table) {
             $table->foreignId('category_id')->constrained('categories','id');
             $table->string('status');
-            $table->foreign('status')->references('name')->on('status');
+            $table->foreign('status')->references('name')->on('statuses');
             $table->string('priority');
-            $table->foreign('priority')->references('name')->on('priority');
+            $table->foreign('priority')->references('name')->on('priorities');
             $table->foreignId('user_id')->constrained();
         });
     }
