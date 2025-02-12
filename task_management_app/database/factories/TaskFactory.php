@@ -21,13 +21,10 @@ class TaskFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'=>fake()->title(),
+            'name'=>fake()->word(),
             'description'=>fake()->sentence(),
             'due_date'=>fake()->date(),
             'category_id'=>Category::factory(),
-            'status_id'=>Status::factory(),
-            'priority_id'=>Priority::factory(),
-            'user_id'=>User::factory(),
         ];
     }
 }
