@@ -10,6 +10,8 @@ use App\Models\TaskList;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,6 +20,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+
+        Schema::disableForeignKeyConstraints();
+        Category::truncate();
+        Task::truncate();
+        Schema::enableForeignKeyConstraints();
+
+
         Priority::create([
             'name'=>'low'
         ]);
@@ -26,7 +35,7 @@ class DatabaseSeeder extends Seeder
         ]);
         Priority::create([
             'name'=>'high'
-        ]);
+        ]);        
         
         Status::create([
             'name'=>'Not started',
@@ -41,9 +50,10 @@ class DatabaseSeeder extends Seeder
             'desc'=>fake()->sentence()
         ]);
 
-        Category::factory(5)->create();
-        User::factory(5)->create();
-        //Task::factory(10)->create();
-        //TaskList::factory(3)->create();
+
+        User::factory(3)->create();
+        $this->call(TaskSeeder::class);
+        $this->call(TaskListSeeder::class);
+
     }
 }
