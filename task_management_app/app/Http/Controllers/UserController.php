@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -29,21 +32,7 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'first_name' => 'required|string',
-            'last_name' => 'required|string',
-            'username' => 'required|string|unique:users',
-            'password' => 'required|string|min:8|confirmed'
-        ]);
-
-        $user = User::create([
-            'first_name' => $validated['first_name'],
-            'last_name' => $validated['last_name'],
-            'username' => $validated['username'],
-            'password' => bcrypt($validated['password'])
-        ]);
-
-        return response()->json($user);
+        
     }
 
     /**
@@ -69,33 +58,35 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $user_id)
+    public function update(Request $request, User $user)
     {
-        $user = User::find($user_id);
 
-        $validated = $request->validate([
-            'first_name' => 'required|string',
-            'last_name' => 'required|string',
-            'username' => 'required|string|unique:users,username,' .$user->id,
-            'password' => 'required|string|min:8|confirmed'
+        $validate = Validator::make($request->all(),[
+            'first_name'=>'required|regex:/[A-Z][a-z]+/|max:255',
+            'last_name'=>'required|regex:/[A-Z][a-z]+|max:255',
+            'username'=>'required|string|max:255|unique:users',
+            'password'=>'required|string|min:10'
         ]);
 
-        $user -> update([
-            'first_name' => $validated['first_name'],
-            'last_name' => $validated['last_name'],
-            'username' => $validated['username'],
-            'password' => $validated['password'] ? bcrypt($validated['password']) : $user->password,
-        ]);
+        if($validate->fails()){
+            return response()->json($validate->errors());
+        }
 
-        return response()->json($user);
+        $user->first_name = $request->first_name;
+        $user->last_name = $request->last_name;
+        $user->username = $request->username;
+        $user->password = Hash::make($request->first_name);
+
+        $user->save();
+
+        return response()->json(['message'=>'User updated successfully!', new UserResource($user)]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($user_id)
+    public function destroy(User $user)
     {
-        $user = User::find($user_id);
         $user->delete();
         return response()->json(['message' => 'User has been deleted']);
     }

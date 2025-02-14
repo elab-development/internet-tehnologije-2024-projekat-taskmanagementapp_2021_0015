@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class TaskController extends Controller
 {
@@ -30,7 +33,34 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(),[
+            'name' => 'required|string|max:255',
+            'description' => 'string|max:255',
+            'due_date' => 'date|after:today',
+            'category_id' => 'required',
+            'status' => ['required',Rule::in(['Not started','Active','Finished'])],
+            'priority' => ['required',Rule::in(['low','medium','high'])]
+        ]);
+
+        //Rule::date()->format('Y-m-d')
+        //Rule::in(['Not started','Active','Finished'])
+        //Rule::in(['low','medium','high']
+
+        if($validator->fails()){
+            return response()->json($validator->errors());
+        }
+
+        $task = Task::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'due_date' => $request->due_date,
+            'category_id' => $request->category_id,
+            'status' => $request->status,
+            'priority' => $request->priority,
+            'user_id' => Auth::user()->id
+        ]);
+
+        return response()->json(['message'=>'Task successfully created!', new TaskResource($task)]);
     }
 
     /**
@@ -54,7 +84,29 @@ class TaskController extends Controller
      */
     public function update(Request $request, Task $task)
     {
-        //
+        $validator = Validator::make($request->all(),[
+            'name' => 'required|string|max:255',
+            'description' => 'string|max:255',
+            'due_date' => ['date|after:today',Rule::date()->format('Y-m-d')],
+            'category_id' => 'required',
+            'status' => ['required',Rule::in(['Not started','Active','Finished'])],
+            'priority' => ['required',Rule::in(['low','medium','high'])],
+        ]);
+
+        if($validator->fails()){
+            return response()->json($validator->errors());
+        }
+
+        $task->name = $request->name;
+        $task->description = $request->description;
+        $task->due_date = $request->due_date;
+        $task->category_id = $request->category_id;
+        $task->status = $request->status;
+        $task->priority = $request->priority;
+
+        $task->save();
+
+        return response()->json(['message'=>'Task successfully updated!', new TaskResource($task)]);
     }
 
     /**
@@ -62,6 +114,7 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
-        //
+        $task->delete();
+        return response()->json(['message'=>'Task has been deleted']);
     }
 }
