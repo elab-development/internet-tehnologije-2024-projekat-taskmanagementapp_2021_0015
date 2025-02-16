@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -58,12 +59,15 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request)
     {
+        $current_user = Auth::user();
+        $user_id = $current_user->id;
+        $user = User::find($user_id);
 
         $validate = Validator::make($request->all(),[
             'first_name'=>'required|regex:/[A-Z][a-z]+/|max:255',
-            'last_name'=>'required|regex:/[A-Z][a-z]+|max:255',
+            'last_name'=>'required|regex:/[A-Z][a-z]+/|max:255',
             'username'=>'required|string|max:255|unique:users',
             'password'=>'required|string|min:10'
         ]);

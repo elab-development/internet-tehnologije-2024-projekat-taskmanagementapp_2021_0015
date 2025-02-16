@@ -13,6 +13,10 @@ class Task extends Model
         'name',
         'description',
         'due_date',
+        'category_id',
+        'status',
+        'priority',
+        'user_id'
     ];
 
     public function user(){
@@ -34,4 +38,5 @@ class Task extends Model
     public function task_list(){
         return $this->belongsToMany(TaskList::class)->using(ListOrder::class);
     }
+
 }

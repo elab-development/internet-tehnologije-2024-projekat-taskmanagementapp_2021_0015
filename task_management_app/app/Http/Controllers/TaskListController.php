@@ -45,8 +45,10 @@ class TaskListController extends Controller
         return response()->json(['message'=>'Task list successfully created!', new TaskListResource($task_list)]);
     }
 
-    public function update(Request $request, TaskList $task_list)
+    public function update(Request $request, $task_list_id)
     {
+        $task_list = TaskList::find($task_list_id);
+
         $validator = Validator::make($request->all(),[
             'name' => 'required|string|max:255',
             'description' => 'string|max:255'
