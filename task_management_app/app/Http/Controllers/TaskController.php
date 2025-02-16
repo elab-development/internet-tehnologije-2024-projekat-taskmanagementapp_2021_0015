@@ -6,6 +6,8 @@ use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -16,7 +18,7 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $tasks = Task::all();
+        $tasks = Task::paginate(10);
         return TaskResource::collection($tasks);
     }
 
@@ -71,6 +73,36 @@ class TaskController extends Controller
         return new TaskResource($task);
     }
 
+    public function filter(Request $request){
+
+        $validator = Validator::make($request->all(),[
+            'status' => Rule::in(['Not started','Active','Finished']),
+            'priority' => Rule::in(['low','medium','high']),
+            'category_id' => 'exists:categories,id'
+        ]);
+
+        if($validator->fails()){
+            return response()->json($validator()->errors());
+        }
+
+        $query = Task::query();
+
+        if($request->has('status')){
+            $query->where('status',$request->status);
+        }
+
+        if($request->has('priority')){
+            $query->where('priority',$request->priority);
+        }
+
+        if($request->has('category_id')){
+            $query->where('category_id',$request->category_id);
+        }
+
+        $tasks = $query->get();
+        return TaskResource::collection($tasks);
+    }
+
     /**
      * Show the form for editing the specified resource.
      */
@@ -87,7 +119,7 @@ class TaskController extends Controller
         $validator = Validator::make($request->all(),[
             'name' => 'required|string|max:255',
             'description' => 'string|max:255',
-            'due_date' => ['date|after:today',Rule::date()->format('Y-m-d')],
+            'due_date' => 'date|after:today',
             'category_id' => 'required',
             'status' => ['required',Rule::in(['Not started','Active','Finished'])],
             'priority' => ['required',Rule::in(['low','medium','high'])],
@@ -117,4 +149,6 @@ class TaskController extends Controller
         $task->delete();
         return response()->json(['message'=>'Task has been deleted']);
     }
+
+    
 }

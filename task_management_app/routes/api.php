@@ -46,8 +46,8 @@ Route::post('login',[AuthController::class,'login']);
 
 Route::group(['middleware'=> ['auth:sanctum']], function(){
     //rute za azuriranje i brisanje korisnika
-    Route::put('users/{id}',[UserController::class,'update']);
-    Route::delete('users/{id}',[UserController::class,'destroy']);
+    Route::get('user',[UserController::class,'show']);
+    Route::put('user',[UserController::class,'update']);
 
     //rute za rad za zadacima
     Route::resource('tasks',TaskController::class)->only(['index','show','store','update','destroy']);
@@ -58,6 +58,9 @@ Route::group(['middleware'=> ['auth:sanctum']], function(){
     Route::post('task_lists',[TaskListController::class,'store']);
     Route::put('task_lists/{id}',[TaskListController::class,'update']);
     Route::delete('task_lists/{id}',[TaskListController::class,'destroy']);
+
+    //ruta za filtriranje zadataka
+    Route::get('tasks/filter',[TaskController::class,'filter']);
 
     //logout
     Route::post('logout', [AuthController::class,'logout']);
