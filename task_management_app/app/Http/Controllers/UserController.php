@@ -68,8 +68,7 @@ class UserController extends Controller
         $validate = Validator::make($request->all(),[
             'first_name'=>'required|regex:/[A-Z][a-z]+/|max:255',
             'last_name'=>'required|regex:/[A-Z][a-z]+/|max:255',
-            'username'=>'required|string|max:255|unique:users',
-            'password'=>'required|string|min:10'
+            'username'=>'required|string|max:255|unique:users'
         ]);
 
         if($validate->fails()){
@@ -79,7 +78,6 @@ class UserController extends Controller
         $user->first_name = $request->first_name;
         $user->last_name = $request->last_name;
         $user->username = $request->username;
-        $user->password = Hash::make($request->first_name);
 
         $user->save();
 
