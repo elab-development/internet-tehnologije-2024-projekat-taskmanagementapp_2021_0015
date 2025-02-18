@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\ListOrderController;
+use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TaskListController;
 use App\Http\Controllers\UserController;
@@ -8,7 +10,6 @@ use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use App\Models\Priority;
 use App\Models\Status;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 //prikazivanje korisnika
@@ -49,8 +50,12 @@ Route::group(['middleware'=> ['auth:sanctum']], function(){
     Route::get('user',[UserController::class,'show']);
     Route::put('user',[UserController::class,'update']);
 
+    //ruta za filtriranje zadataka
+    Route::get('tasks/filter',[TaskController::class,'filter']);
     //rute za rad za zadacima
     Route::resource('tasks',TaskController::class)->only(['index','show','store','update','destroy']);
+
+    Route::get('lists',[ListOrderController::class,'index']);
 
     //rute za rad sa listama zadataka
     Route::get('task_lists',[TaskListController::class,'index']);
@@ -59,8 +64,9 @@ Route::group(['middleware'=> ['auth:sanctum']], function(){
     Route::put('task_lists/{id}',[TaskListController::class,'update']);
     Route::delete('task_lists/{id}',[TaskListController::class,'destroy']);
 
-    //ruta za filtriranje zadataka
-    Route::get('tasks/filter',[TaskController::class,'filter']);
+    //rute za resetovanje sifre
+    Route::post('password/forgot',[PasswordController::class,'sendResetLink']);
+    Route::post('password/reset',[PasswordController::class,'reset']);
 
     //logout
     Route::post('logout', [AuthController::class,'logout']);
