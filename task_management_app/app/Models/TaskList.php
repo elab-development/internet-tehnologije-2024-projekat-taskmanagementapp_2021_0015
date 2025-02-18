@@ -22,6 +22,6 @@ class TaskList extends Model
     }
 
     public function task(){
-        return $this->belongsToMany(Task::class)->using(ListOrder::class);
+        return $this->belongsToMany(Task::class,'list_order','task_list_id','task_id')->orderBy('num');
     }
 }

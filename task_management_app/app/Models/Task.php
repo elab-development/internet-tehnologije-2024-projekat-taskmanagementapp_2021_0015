@@ -36,7 +36,7 @@ class Task extends Model
     }
 
     public function task_list(){
-        return $this->belongsToMany(TaskList::class)->using(ListOrder::class);
+        return $this->belongsToMany(TaskList::class, 'list_order','task_id','task_list_id')->withPivot('num');
     }
 
 }
