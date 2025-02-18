@@ -12,15 +12,16 @@ class TaskListController extends Controller
 {
     public function index()
     {
-        $task_lists = TaskList::all();
+        $user_id = Auth::id();
+        $task_lists = TaskList::where('user_id',$user_id)->get();
         return TaskListResource::collection($task_lists);
     }
 
     public function show($task_list_id)
     {
         $task_list = TaskList::find($task_list_id);
-        if(is_null($task_list)){
-            return response()->json('List not found',404);
+        if(!$task_list || ($task_list->user_id !== Auth::id())){
+            return response()->json(['message'=>'Task list not found']);
         }
         return new TaskListResource($task_list);
     }

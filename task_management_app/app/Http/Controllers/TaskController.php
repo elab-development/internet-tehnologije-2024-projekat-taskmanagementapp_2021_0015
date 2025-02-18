@@ -6,8 +6,6 @@ use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -18,7 +16,8 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $tasks = Task::paginate(10);
+        $user_id = Auth::id();
+        $tasks = Task::where('user_id',$user_id)->paginate(10);
         return TaskResource::collection($tasks);
     }
 
@@ -44,10 +43,6 @@ class TaskController extends Controller
             'priority' => ['required',Rule::in(['low','medium','high'])]
         ]);
 
-        //Rule::date()->format('Y-m-d')
-        //Rule::in(['Not started','Active','Finished'])
-        //Rule::in(['low','medium','high']
-
         if($validator->fails()){
             return response()->json($validator->errors());
         }
@@ -70,6 +65,9 @@ class TaskController extends Controller
      */
     public function show(Task $task)
     {
+        if($task->user_id !== Auth::id()){
+            return response()->json(['message'=>'Task not found']);
+        }
         return new TaskResource($task);
     }
 
@@ -82,7 +80,7 @@ class TaskController extends Controller
         ]);
 
         if($validator->fails()){
-            return response()->json($validator()->errors());
+            return response()->json($validator->errors());
         }
 
         $query = Task::query();
