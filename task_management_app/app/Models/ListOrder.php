@@ -3,9 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class ListOrder
+class ListOrder extends Model
 {
     protected $fillable = ['task_list_id','task_id','num'];
 }

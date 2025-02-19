@@ -56,6 +56,9 @@ Route::group(['middleware'=> ['auth:sanctum']], function(){
     Route::resource('tasks',TaskController::class)->only(['index','show','store','update','destroy']);
 
     Route::get('lists',[ListOrderController::class,'index']);
+    Route::get('lists/{id}',[ListOrderController::class,'show']);
+    Route::post('lists',[ListOrderController::class,'addTask']);
+    Route::delete('lists/{task_list_id}/{task_id}',[ListOrderController::class,'removeTask']);
 
     //rute za rad sa listama zadataka
     Route::get('task_lists',[TaskListController::class,'index']);
