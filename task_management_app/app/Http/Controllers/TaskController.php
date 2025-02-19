@@ -14,10 +14,18 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $user_id = Auth::id();
-        $tasks = Task::where('user_id',$user_id)->paginate(10);
+        $user = Auth::user();
+        
+        $search = $request->query('search');
+
+        $query = Task::where('user_id',$user->id);
+        if($search){
+            $query->where('name','like',"%{$search}%");
+        }
+
+        $tasks = $query->paginate(10);
         return TaskResource::collection($tasks);
     }
 
