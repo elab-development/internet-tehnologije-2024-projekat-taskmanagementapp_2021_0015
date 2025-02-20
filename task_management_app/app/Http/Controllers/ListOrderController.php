@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ListOrderResource;
-use App\Http\Resources\TaskListResource;
 use App\Models\TaskList;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -85,6 +84,6 @@ class ListOrderController extends Controller
             ->where('task_id',$task_id)
             ->delete();
         
-        return response()->json(['message'=>'Task successfully removed from the list']);
+        return response()->json(['message'=>'Task removed from the list']);
     }
 }
