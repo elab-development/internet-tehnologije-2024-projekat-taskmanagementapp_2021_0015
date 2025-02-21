@@ -12,6 +12,9 @@ class TaskListResource extends JsonResource
      *
      * @return array<string, mixed>
      */
+
+    public static $wrap = 'task list';
+    
     public function toArray(Request $request): array
     {
         return [

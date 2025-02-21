@@ -12,9 +12,12 @@ class CategoryResource extends JsonResource
      *
      * @return array<string, mixed>
      */
+
+    public static $wrap = 'category';
+
     public function toArray(Request $request): array
     {
-        //return parent::toArray($request);
+        
         return[
             'name'=>$this->resource->name,
             'tag'=>$this->resource->tag
