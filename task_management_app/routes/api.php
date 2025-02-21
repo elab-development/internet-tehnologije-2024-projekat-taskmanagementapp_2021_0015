@@ -12,10 +12,6 @@ use App\Models\Priority;
 use App\Models\Status;
 use Illuminate\Support\Facades\Route;
 
-//prikazivanje korisnika
-Route::get('users', [UserController::class,'index']);
-Route::get('users/{id}', [UserController::class,'show']);
-
 //prikaz dostupnih kategorija
 Route::get('categories', function(){
     $categories = Category::all();
@@ -46,15 +42,17 @@ Route::post('register',[AuthController::class,'register']);
 Route::post('login',[AuthController::class,'login']);
 
 Route::group(['middleware'=> ['auth:sanctum']], function(){
-    //rute za azuriranje i brisanje korisnika
-    Route::get('user',[UserController::class,'show']);
+    //rute za prikaz, azuriranje i brisanje korisnika
+    Route::get('user', [UserController::class,'show']);
     Route::put('user',[UserController::class,'update']);
+    Route::delete('user',[UserController::class,'destroy']);
 
     //ruta za filtriranje zadataka
     Route::get('tasks/filter',[TaskController::class,'filter']);
     //rute za rad za zadacima
     Route::resource('tasks',TaskController::class)->only(['index','show','store','update','destroy']);
 
+    //rute za prikazivanje listi, dodavanje i brisanje zadatka iz liste
     Route::get('lists',[ListOrderController::class,'index']);
     Route::get('lists/{id}',[ListOrderController::class,'show']);
     Route::post('lists',[ListOrderController::class,'addTask']);
