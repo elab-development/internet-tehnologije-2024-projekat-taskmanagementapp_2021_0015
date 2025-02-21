@@ -14,7 +14,7 @@ return new class extends Migration
             $table->foreign('status')->references('name')->on('statuses');
             $table->string('priority');
             $table->foreign('priority')->references('name')->on('priorities');
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
         });
     }
 
