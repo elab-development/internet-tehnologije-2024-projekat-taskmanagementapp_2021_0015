@@ -32,18 +32,25 @@ class AuthController extends Controller
         
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json(['user'=>$user, 'access_token'=>$token, 'token_type'=>'Bearer']);
+        return response()->json(['message'=>'Registration successful!', 
+                                 'user'=>$user, 
+                                 'access_token'=>$token, 
+                                 'token_type'=>'Bearer']);
     }
 
     public function login(Request $request){
         if(!Auth::attempt($request->only('username','password'))){
-            return response()->json(['message' => 'Couldn\'t log in with given username and password']);
+            return response()->json(
+                ['message' => 'Couldn\'t log in with given username and password']
+            );
         }
 
         $user = User::where('username', $request['username'])->first();
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json(['message'=>'Successfully logged in!', 'access_token'=>$token, 'token_type'=>'Bearer']);
+        return response()->json(['message'=>'Successfully logged in!', 
+                                 'access_token'=>$token, 
+                                 'token_type'=>'Bearer']);
     }
 
     public function logout(){

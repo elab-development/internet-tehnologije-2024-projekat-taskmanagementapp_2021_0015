@@ -67,8 +67,12 @@ class TaskListController extends Controller
         return response()->json(['message'=>'Task list successfully updated!', new TaskListResource($task_list)]);
     }
 
-    public function destroy(TaskList $task_list)
+    public function destroy($task_list_id)
     {
+        $task_list = TaskList::find($task_list_id);
+        if(!$task_list || Auth::id()!==$task_list->user_id){
+            return response()->json(['message'=>'Error']);
+        }
         $task_list->delete();
         return response()->json(['message'=>'Task list has been deleted']);
     }

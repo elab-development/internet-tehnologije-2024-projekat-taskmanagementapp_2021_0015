@@ -10,17 +10,12 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    public function index()
-    {
-        $users = User::all();
-        return response()->json($users);
-    }
 
-    public function show($user_id)
+    public function show()
     {
-        $user = User::find($user_id);
+        $user = Auth::user();
         if(is_null($user)){
-            return response()->json('User doesn\'t exist');
+            return response()->json('Error');
         }
         return response()->json($user);
     }
@@ -50,8 +45,10 @@ class UserController extends Controller
         return response()->json(['message'=>'User updated successfully!', new UserResource($user)]);
     }
 
-    public function destroy(User $user)
+    public function destroy()
     {
+        $user = Auth::user();
+        $user = User::find($user->id);
         $user->delete();
         return response()->json(['message' => 'User has been deleted']);
     }
