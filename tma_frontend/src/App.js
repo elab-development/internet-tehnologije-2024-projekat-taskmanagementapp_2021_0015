@@ -1,13 +1,17 @@
 import logo from './logo.svg';
 import './App.css';
 import {zadaci, kategorije, liste, redosled, korisnici} from './Data';
+import {useState} from 'react';
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import NavBar from './components/NavBar';
+import Tasks from './components/Tasks';
 
 const status = ['Nije zapocet', 'U toku', 'Zavrseno'];
-const prioritet = ['Visok', 'Srednji', 'Nizak'];
+const priority = ['Visok', 'Srednji', 'Nizak'];
 
 function App() {
+  const [tasks, setTasks] = useState(zadaci);
+  const [categories, setCategories] = useState(kategorije);
 
   return (
     <BrowserRouter>
@@ -22,7 +26,12 @@ function App() {
               </div>
               <div className='contents'>
                 <div className='main-container'>
-                  
+                  <Tasks 
+                    tasks = {tasks}
+                    categories = {categories}
+                    status= {status}
+                    priority= {priority} 
+                  />
                 </div>
 
               </div>

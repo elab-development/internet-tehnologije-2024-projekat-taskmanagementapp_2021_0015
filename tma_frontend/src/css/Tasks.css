@@ -1,0 +1,29 @@
+.task-container{
+  display: flex;
+  flex-wrap: wrap;
+  height: fit-content;
+}
+
+.task-card{
+  display: flex;
+  flex-direction: row;
+  height: 140px;
+  width: 300px;
+  padding: 20px;
+  margin: 20px;
+  background-color: #F5CBCB;
+  border-radius: 20px;
+  justify-content: space-evenly;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.15s;
+}
+
+.task-card:hover{
+  transform: translateY(-4px);
+}
+
+.title {
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  margin-bottom: 5px;
+}
