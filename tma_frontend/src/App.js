@@ -5,6 +5,7 @@ import {useState} from 'react';
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import NavBar from './components/NavBar';
 import Tasks from './components/Tasks';
+import Sidebar from './components/Sidebar';
 
 const status = ['Nije zapocet', 'U toku', 'Zavrseno'];
 const priority = ['Visok', 'Srednji', 'Nizak'];
@@ -12,6 +13,21 @@ const priority = ['Visok', 'Srednji', 'Nizak'];
 function App() {
   const [tasks, setTasks] = useState(zadaci);
   const [categories, setCategories] = useState(kategorije);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState(null);
+  const [filterPriority, setFilterPriority] = useState(null);
+  const [filterCategory, setFilterCategory] = useState(null);
+  
+  const filteredTasks = tasks.filter(task => {
+    const searchMatch = task.naziv.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    task.opis.toLowerCase().includes(searchTerm.toLowerCase());
+    const statusMatch = filterStatus ? task.status === filterStatus : true;
+    const priorityMatch = filterPriority ? task.prioritet === filterPriority : true;
+    const categoryMatch = filterCategory ? task.kategorija === filterCategory : true;
+
+    return searchMatch && statusMatch && priorityMatch && categoryMatch;
+  })
 
   return (
     <BrowserRouter>
@@ -27,13 +43,18 @@ function App() {
               <div className='contents'>
                 <div className='main-container'>
                   <Tasks 
-                    tasks = {tasks}
+                    tasks = {filteredTasks}
                     categories = {categories}
                     status= {status}
                     priority= {priority} 
                   />
                 </div>
-
+                <Sidebar
+                  searchTerm={searchTerm} setSearchTerm={setSearchTerm}
+                  status={status} priority={priority} categories={categories}
+                  filterStatus={filterStatus} filterPriority={filterPriority} filterCategory={filterCategory}
+                  setFilterStatus={setFilterStatus} setFilterPriority={setFilterPriority} setFilterCategory={setFilterCategory}
+                />
               </div>
             </>
           }

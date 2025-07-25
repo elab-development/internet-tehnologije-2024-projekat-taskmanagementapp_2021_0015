@@ -6,3 +6,60 @@
     background-color: #F5CBCB;
     justify-content: space-between;
 }
+
+.search{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 20px;
+  padding-right: 10px;
+  border-style: solid;
+  border-color: #aa7c8c;
+  border-radius: 20px;
+  background-color: transparent;
+}
+
+#search-bar{
+  height: 30px;
+  width: 100%;
+  padding-left: 10px;
+  border-style: none;
+  background-color: transparent;
+  outline: none;
+}
+
+.filter-container{
+  display: flex;
+  flex-direction: column;
+}
+
+.filters{
+    margin-left: 20px;
+}
+
+.filter-buttons{
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.filter-buttons.disabled{
+  opacity: .7;
+  pointer-events: none;
+}
+
+.btn-filter{
+  padding: 10px;
+  border-radius: 20px;
+  background-color: #D9A299;
+  border-style: none;
+  margin-right:10px;
+  margin-bottom: 10px;
+  font-size: medium;
+  cursor: pointer;
+}
+
+.btn-filter.active{
+  background-color: #8d5045;
+}
