@@ -29,6 +29,13 @@ function App() {
     return searchMatch && statusMatch && priorityMatch && categoryMatch;
   })
 
+  const addTask = newTask => setTasks(prev => [...prev,newTask]);
+  const updateTask = updated => setTasks(prev => prev.map(t=> (t.id===updated.id ? updated : t)));
+  const deleteTask = id => setTasks(prev => prev.filter(t => t.id !== id));
+
+  const [openSelectMenu, setOpenSelectMenu] = useState(false);
+  const [openAddTaskMenu, setOpenAddTaskMenu] = useState(false);
+
   return (
     <BrowserRouter>
      <div>
@@ -47,6 +54,9 @@ function App() {
                     categories = {categories}
                     status= {status}
                     priority= {priority} 
+                    onAdd={addTask}
+                    onUpdate={updateTask}
+                    onDelete={deleteTask}
                   />
                 </div>
                 <Sidebar
@@ -54,6 +64,9 @@ function App() {
                   status={status} priority={priority} categories={categories}
                   filterStatus={filterStatus} filterPriority={filterPriority} filterCategory={filterCategory}
                   setFilterStatus={setFilterStatus} setFilterPriority={setFilterPriority} setFilterCategory={setFilterCategory}
+                  openSelectMenu={openSelectMenu} setOpenSelectMenu={setOpenSelectMenu}
+                  openAddTaskMenu={openAddTaskMenu} setOpenAddTaskMenu={setOpenAddTaskMenu}
+                  tasks={tasks} addTask={addTask} updateTask={updateTask} deleteTask={deleteTask}
                 />
               </div>
             </>

@@ -2,7 +2,7 @@ import React from 'react'
 import Task from './Task'
 import '../css/Tasks.css'
 
-const Tasks = ({tasks, categories, status, priority}) => {
+const Tasks = ({tasks, categories, status, priority, onAdd, onUpdate, onDelete}) => {
   return (
     <div className='task-container'>
         {tasks.map((task) => <Task
@@ -11,6 +11,9 @@ const Tasks = ({tasks, categories, status, priority}) => {
                                 category={categories}
                                 status={status}
                                 priority={priority}
+                                onAdd={onAdd}
+                                onUpdate={onUpdate}
+                                onDelete={onDelete}
                             />)}
 
     </div>

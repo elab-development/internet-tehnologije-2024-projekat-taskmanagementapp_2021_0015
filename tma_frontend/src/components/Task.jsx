@@ -1,14 +1,33 @@
-import React from 'react'
+import React, { useState } from 'react'
 import '../css/Tasks.css'
+import TaskModalForm from './TaskModalForm';
 
-const Task = ({task, category, status, priority}) => {
+const Task = ({task, category, status, priority, onAdd, onUpdate, onDelete}) => {
+  const [open, setOpen] = useState(false);
+
   return (
-    <div className='task-card'>
+    <>
+    <div className='task-card' onClick={()=>setOpen(true)}>
         <div className='Task'>
             <h3 className='title'>{task.naziv}</h3>
             <p className='desc'>{task.opis}</p>
         </div>
     </div>
+
+    {open && (
+      <TaskModalForm
+        initialData={task}
+        nextId={null}
+        onAdd={onAdd}
+        onUpdate={onUpdate}
+        onClose={()=>setOpen(false)}
+        onDelete={onDelete}
+        categories={category}
+        status={status}
+        priority={priority}
+      />
+    )}
+    </>
   )
 }
 
