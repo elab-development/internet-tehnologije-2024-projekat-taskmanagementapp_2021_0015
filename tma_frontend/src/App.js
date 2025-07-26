@@ -93,6 +93,9 @@ function App() {
           path='/'
           element = {
             <>
+            <div className='header'>
+              <NavBar type={'auth'}/>
+            </div>
             <div className='login-page'>
               <Login users={users}/>
             </div>
@@ -104,7 +107,7 @@ function App() {
           element = {
             <>
               <div className='header'>
-                <NavBar />
+                <NavBar type={'normal'}/>
               </div>
               <div className='contents'>
                 <div className='main-container'>
@@ -141,7 +144,7 @@ function App() {
           element = {
             <>
               <div className='header'>
-                <NavBar />
+                <NavBar type={'normal'}/>
               </div>
               <div className='lists-page'>
                 <Lists
