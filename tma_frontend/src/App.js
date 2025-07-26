@@ -11,9 +11,12 @@ import {useAuth} from './AuthContext';
 import Login from './components/Login';
 import Register from './components/Register';
 import ProtectedRoute from './components/ProtectedRoute';
+import Pagination from './components/Pagination';
 
 const status = ['Nije zapocet', 'U toku', 'Zavrseno'];
 const priority = ['Visok', 'Srednji', 'Nizak'];
+const tasks_per_page = 3;
+const lists_per_page = 3;
 
 function App() {
   const {currentUser} = useAuth();
@@ -68,7 +71,7 @@ function App() {
       setOrder(prev => [...prev.filter(o => o.listaId !== list.id),...listOrder])
     }else{
       setLists(prev => [...prev, list]);
-      setOrder(prev => [...prev,listOrder]);
+      setOrder(prev => [...prev,...listOrder]);
     }
   }
 
@@ -90,6 +93,12 @@ function App() {
   const [openAddListMenu, setOpenAddListMenu] = useState(false);
   const [openAddCategoryMenu, setOpenAddCategoryMenu] = useState(false);
   const [openDeleteCategoryMenu, setOpenDeleteCategoryMenu] = useState(false);
+
+  const [taskPage, setTaskPage] = useState(0);
+  const visibleTasks = filteredTasks.slice(taskPage*tasks_per_page, (taskPage+1)*tasks_per_page);
+
+  const [listPage, setListPage] = useState(0);
+  const visibleLists = lists.slice(listPage*lists_per_page, (listPage+1)*lists_per_page);
 
   return (
     <BrowserRouter>
@@ -132,13 +141,19 @@ function App() {
               <div className='contents'>
                 <div className='main-container'>
                   <Tasks 
-                    tasks = {filteredTasks}
+                    tasks = {visibleTasks}
                     categories = {categories}
                     status= {status}
                     priority= {priority} 
                     onAdd={addTask}
                     onUpdate={updateTask}
                     onDelete={deleteTask}
+                  />
+                  <Pagination
+                    currentPage={taskPage}
+                    totalItems={filteredTasks.length}
+                    itemsPerPage={tasks_per_page}
+                    onPageChange={setTaskPage}
                   />
                 </div>
                 <Sidebar
@@ -171,18 +186,22 @@ function App() {
               <div className='lists-page'>
                 <Lists
                   tasks={tasks}
-                  lists={lists}
+                  lists={visibleLists}
                   order={order}
                   onSave={handleSaveList}
                   onDelete={handleDeleteList}
+                />
+                <Pagination
+                  currentPage={listPage}
+                  totalItems={lists.length}
+                  itemsPerPage={lists_per_page}
+                  onPageChange={setListPage}
                 />
               </div>
             </>
             </ProtectedRoute>
           }
         />
-
-        
       </Routes>
      </div>
     </BrowserRouter>
