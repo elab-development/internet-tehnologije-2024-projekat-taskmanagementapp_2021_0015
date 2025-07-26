@@ -6,6 +6,7 @@ import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import NavBar from './components/NavBar';
 import Tasks from './components/Tasks';
 import Sidebar from './components/Sidebar';
+import Lists from './components/Lists';
 
 const status = ['Nije zapocet', 'U toku', 'Zavrseno'];
 const priority = ['Visok', 'Srednji', 'Nizak'];
@@ -13,6 +14,8 @@ const priority = ['Visok', 'Srednji', 'Nizak'];
 function App() {
   const [tasks, setTasks] = useState(zadaci);
   const [categories, setCategories] = useState(kategorije);
+  const [lists, setLists] = useState(liste);
+  const [order, setOrder] = useState(redosled);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState(null);
@@ -33,8 +36,25 @@ function App() {
   const updateTask = updated => setTasks(prev => prev.map(t=> (t.id===updated.id ? updated : t)));
   const deleteTask = id => setTasks(prev => prev.filter(t => t.id !== id));
 
+  const handleSaveList = (list, listOrder) => {
+    const isEditing = list && lists.some(l => l.id === list.id);
+    if(isEditing){
+      setLists(prev => prev.map(l => (l.id === list.id ? list : l)));
+      setOrder(prev => [...prev.filter(o => o.listaId !== list.id),...listOrder])
+    }else{
+      setLists(prev => [...prev, list]);
+      setOrder(prev => [...prev,listOrder]);
+    }
+  }
+
+  const handleDeleteList = (id) => {
+    setLists(prev => prev.filter(l => l.id !== id));
+    setOrder(prev => prev.filter(o => o.listaId !== id));
+  }
+
   const [openSelectMenu, setOpenSelectMenu] = useState(false);
   const [openAddTaskMenu, setOpenAddTaskMenu] = useState(false);
+  const [openAddListMenu, setOpenAddListMenu] = useState(false);
 
   return (
     <BrowserRouter>
@@ -67,6 +87,8 @@ function App() {
                   openSelectMenu={openSelectMenu} setOpenSelectMenu={setOpenSelectMenu}
                   openAddTaskMenu={openAddTaskMenu} setOpenAddTaskMenu={setOpenAddTaskMenu}
                   tasks={tasks} addTask={addTask} updateTask={updateTask} deleteTask={deleteTask}
+                  openAddListMenu={openAddListMenu} setOpenAddListMenu={setOpenAddListMenu}
+                  lists={lists} order={order} saveList={handleSaveList} deleteList={handleDeleteList}
                 />
               </div>
             </>
@@ -80,7 +102,13 @@ function App() {
                 <NavBar />
               </div>
               <div className='lists-page'>
-
+                <Lists
+                  tasks={tasks}
+                  lists={lists}
+                  order={order}
+                  onSave={handleSaveList}
+                  onDelete={handleDeleteList}
+                />
               </div>
             </>
           }

@@ -1,0 +1,31 @@
+.lists-container{
+  display: flex;
+  flex-wrap: wrap;
+  height: fit-content;
+}
+
+.list-card{
+  display: flex;
+  flex-direction: column;
+  height: 300px;
+  width: 300px;
+  padding: 20px;
+  margin: 20px;
+  background-color: #F5CBCB;
+  border-radius: 20px;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.15s;
+}
+
+.list-card:hover{
+  transform: translateY(-4px);
+}
+
+.list-title{
+  margin-bottom: 10px;
+}
+
+.list-item{
+  display: flex;
+}

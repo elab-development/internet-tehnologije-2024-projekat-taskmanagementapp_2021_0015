@@ -4,6 +4,7 @@ import Filter from './Filter'
 import TaskModalForm from './TaskModalForm'
 import '../css/Sidebar.css'
 import { FaPlus, FaMinus } from "react-icons/fa";
+import ListModalForm from './ListModalForm'
 
 const Sidebar = (
     {searchTerm, setSearchTerm,
@@ -12,7 +13,9 @@ const Sidebar = (
     setFilterStatus, setFilterPriority, setFilterCategory,
     openSelectMenu, setOpenSelectMenu,
     openAddTaskMenu, setOpenAddTaskMenu,
-    tasks, addTask, updateTask, deleteTask
+    tasks, addTask, updateTask, deleteTask,
+    openAddListMenu, setOpenAddListMenu,
+    lists, order, saveList, deleteList
     }
 ) => {
   return (
@@ -40,7 +43,18 @@ const Sidebar = (
                   priority={priority} 
                 />
               )}
-              <p className='option'>Kreiraj listu</p>
+              <p className='option' onClick={()=>setOpenAddListMenu(true)}>Kreiraj listu</p>
+              {openAddListMenu && (
+                <ListModalForm
+                  list={null}
+                  tasks={tasks}
+                  order={order}
+                  nextId={()=> Math.max(-1,...lists.map(l=>l.id)) + 1}
+                  onSave={saveList}
+                  onDelete={deleteList}
+                  onClose={()=>setOpenAddListMenu(false)}
+                />
+              )}
               <p className='option'>Dodaj kategoriju</p>
               <p className='option'>Obrisi kategoriju</p>
             </div>
