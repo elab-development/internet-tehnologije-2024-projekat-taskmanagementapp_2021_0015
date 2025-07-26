@@ -5,6 +5,7 @@ import TaskModalForm from './TaskModalForm'
 import '../css/Sidebar.css'
 import { FaPlus, FaMinus } from "react-icons/fa";
 import ListModalForm from './ListModalForm'
+import CategoryModalForm from './CategoryModalForm'
 
 const Sidebar = (
     {searchTerm, setSearchTerm,
@@ -15,7 +16,10 @@ const Sidebar = (
     openAddTaskMenu, setOpenAddTaskMenu,
     tasks, addTask, updateTask, deleteTask,
     openAddListMenu, setOpenAddListMenu,
-    lists, order, saveList, deleteList
+    lists, order, saveList, deleteList,
+    openAddCategoryMenu, setOpenAddCategoryMenu,
+    openDeleteCategoryMenu, setOpenDeleteCategoryMenu,
+    addCategory, deleteCategory
     }
 ) => {
   return (
@@ -55,8 +59,30 @@ const Sidebar = (
                   onClose={()=>setOpenAddListMenu(false)}
                 />
               )}
-              <p className='option'>Dodaj kategoriju</p>
-              <p className='option'>Obrisi kategoriju</p>
+              <p className='option' onClick={()=>setOpenAddCategoryMenu(true)}>Dodaj kategoriju</p>
+              {openAddCategoryMenu && (
+                <CategoryModalForm
+                  categories={categories}
+                  isNew={true}
+                  nextId={()=>Math.max(-1,...categories.map(c=>c.id)) + 1}
+                  onAdd={addCategory}
+                  onDelete={deleteCategory}
+                  onClose={()=>setOpenAddCategoryMenu(false)}
+                />
+              )}
+              <p className='option' onClick={()=>setOpenDeleteCategoryMenu(true)}>Obrisi kategoriju</p>
+              {openDeleteCategoryMenu && (
+                <CategoryModalForm
+                  categories={categories}
+                  isNew={false}
+                  nextId={-1}
+                  onAdd={addCategory}
+                  onDelete={deleteCategory}
+                  onClose={()=>setOpenDeleteCategoryMenu(false)}
+                />
+              )
+
+              }
             </div>
           )}
           <div className='plus-btn' onClick={()=>setOpenSelectMenu(prev=>!prev)}>

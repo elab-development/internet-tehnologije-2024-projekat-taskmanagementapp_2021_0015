@@ -1,7 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 import {zadaci, kategorije, liste, redosled, korisnici} from './Data';
-import {useState} from 'react';
+import {use, useState} from 'react';
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import NavBar from './components/NavBar';
 import Tasks from './components/Tasks';
@@ -52,9 +52,19 @@ function App() {
     setOrder(prev => prev.filter(o => o.listaId !== id));
   }
 
+  const addCategory = newCategory => setCategories(prev => [...prev,newCategory]);
+  const deleteCategory = id => setCategories(prev => prev.filter(c => c.id !== id));
+
+  const handleDeleteCategory = (id) => {
+    setTasks(prevTasks => prevTasks.map(t => t.kategorija===id ? {...t,kategorija:null} : t))
+    deleteCategory(id);
+  }
+
   const [openSelectMenu, setOpenSelectMenu] = useState(false);
   const [openAddTaskMenu, setOpenAddTaskMenu] = useState(false);
   const [openAddListMenu, setOpenAddListMenu] = useState(false);
+  const [openAddCategoryMenu, setOpenAddCategoryMenu] = useState(false);
+  const [openDeleteCategoryMenu, setOpenDeleteCategoryMenu] = useState(false);
 
   return (
     <BrowserRouter>
@@ -89,6 +99,9 @@ function App() {
                   tasks={tasks} addTask={addTask} updateTask={updateTask} deleteTask={deleteTask}
                   openAddListMenu={openAddListMenu} setOpenAddListMenu={setOpenAddListMenu}
                   lists={lists} order={order} saveList={handleSaveList} deleteList={handleDeleteList}
+                  openAddCategoryMenu={openAddCategoryMenu} setOpenAddCategoryMenu={setOpenAddCategoryMenu}
+                  openDeleteCategoryMenu={openDeleteCategoryMenu} setOpenDeleteCategoryMenu={setOpenDeleteCategoryMenu}
+                  addCategory={addCategory} deleteCategory={handleDeleteCategory}
                 />
               </div>
             </>
