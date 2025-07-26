@@ -10,6 +10,7 @@ import Lists from './components/Lists';
 import {useAuth} from './AuthContext';
 import Login from './components/Login';
 import Register from './components/Register';
+import ProtectedRoute from './components/ProtectedRoute';
 
 const status = ['Nije zapocet', 'U toku', 'Zavrseno'];
 const priority = ['Visok', 'Srednji', 'Nizak'];
@@ -21,7 +22,7 @@ function App() {
   const addUser = (newUser) => {
     setUsers(prev=>[...prev,newUser]);
   }
-  
+
   const [tasks, setTasks] = useState([]);
   const [categories, setCategories] = useState([]);
   const [lists, setLists] = useState([]);
@@ -123,6 +124,7 @@ function App() {
         <Route 
           path = '/tasks'
           element = {
+            <ProtectedRoute>
             <>
               <div className='header'>
                 <NavBar type={'normal'}/>
@@ -155,11 +157,13 @@ function App() {
                 />
               </div>
             </>
+            </ProtectedRoute>
           }
         />
         <Route
           path = '/lists'
           element = {
+            <ProtectedRoute>
             <>
               <div className='header'>
                 <NavBar type={'normal'}/>
@@ -174,6 +178,7 @@ function App() {
                 />
               </div>
             </>
+            </ProtectedRoute>
           }
         />
 
