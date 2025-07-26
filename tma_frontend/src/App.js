@@ -9,6 +9,7 @@ import Sidebar from './components/Sidebar';
 import Lists from './components/Lists';
 import {useAuth} from './AuthContext';
 import Login from './components/Login';
+import Register from './components/Register';
 
 const status = ['Nije zapocet', 'U toku', 'Zavrseno'];
 const priority = ['Visok', 'Srednji', 'Nizak'];
@@ -17,6 +18,10 @@ function App() {
   const {currentUser} = useAuth();
 
   const [users, setUsers] = useState(korisnici);
+  const addUser = (newUser) => {
+    setUsers(prev=>[...prev,newUser]);
+  }
+  
   const [tasks, setTasks] = useState([]);
   const [categories, setCategories] = useState([]);
   const [lists, setLists] = useState([]);
@@ -89,6 +94,19 @@ function App() {
     <BrowserRouter>
      <div>
       <Routes>
+        <Route
+          path='/register'
+          element = {
+            <>
+            <div className='header'>
+              <NavBar type={'auth'}/>
+            </div>
+            <div className='login-page'>
+              <Register addUser={addUser} users={users}/>
+            </div>
+            </>
+          }
+        />
         <Route
           path='/'
           element = {

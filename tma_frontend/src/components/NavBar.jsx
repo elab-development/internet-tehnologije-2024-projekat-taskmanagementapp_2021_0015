@@ -28,7 +28,7 @@ const NavBar = ({type}) => {
       <div className='NavBar'>
           <Link to='/tasks'><h1>TaskMaster</h1></Link>
           <div className='pages'>
-              <Link to='/'>Register</Link>
+              <Link to='/register'>Register</Link>
           </div>
       </div>
     )
