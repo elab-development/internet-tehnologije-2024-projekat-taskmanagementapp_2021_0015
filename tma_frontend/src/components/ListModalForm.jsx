@@ -2,8 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { IoCloseCircleOutline } from "react-icons/io5";
 import MultiSelectButtons from './MultiSelectButtons';
 import '../css/ListModalForm.css';
+import {useAuth} from '../AuthContext';
 
 const ListModalForm = ({list=null, tasks, order, onSave, onDelete, onClose, nextId}) => {
+    const {currentUser} = useAuth();
+
     const isEditing = list!==null;
     const [listData, setListData] = useState(
         list || {id: nextId(), naziv: ''}
@@ -48,7 +51,8 @@ const ListModalForm = ({list=null, tasks, order, onSave, onDelete, onClose, next
 
     const handleSave = () => {
         const finalList = {
-            ...listData
+            ...listData,
+            korisnik: currentUser.id
         }
         onSave(finalList, taskOrder);
         onClose();

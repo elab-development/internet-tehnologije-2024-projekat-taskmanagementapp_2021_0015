@@ -1,21 +1,40 @@
 import logo from './logo.svg';
 import './App.css';
 import {zadaci, kategorije, liste, redosled, korisnici} from './Data';
-import {use, useState} from 'react';
+import {use, useEffect, useState} from 'react';
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import NavBar from './components/NavBar';
 import Tasks from './components/Tasks';
 import Sidebar from './components/Sidebar';
 import Lists from './components/Lists';
+import {useAuth} from './AuthContext';
+import Login from './components/Login';
 
 const status = ['Nije zapocet', 'U toku', 'Zavrseno'];
 const priority = ['Visok', 'Srednji', 'Nizak'];
 
 function App() {
-  const [tasks, setTasks] = useState(zadaci);
-  const [categories, setCategories] = useState(kategorije);
-  const [lists, setLists] = useState(liste);
-  const [order, setOrder] = useState(redosled);
+  const {currentUser} = useAuth();
+
+  const [users, setUsers] = useState(korisnici);
+  const [tasks, setTasks] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [lists, setLists] = useState([]);
+  const [order, setOrder] = useState([]);
+
+  useEffect(()=>{
+    if(currentUser){
+      const user_tasks = zadaci.filter(z => z.korisnik == currentUser.id);
+      const user_lists = liste.filter(l => l.korisnik == currentUser.id);
+      const user_order = redosled.filter(r => user_lists.some(l => l.id === r.listaId));
+      const user_categories = kategorije.filter(k => user_tasks.some(t => t.kategorija === k.id));
+
+      setTasks(user_tasks);
+      setLists(user_lists);
+      setOrder(user_order);
+      setCategories(user_categories);
+    }
+  }, [currentUser]);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState(null);
@@ -70,6 +89,16 @@ function App() {
     <BrowserRouter>
      <div>
       <Routes>
+        <Route
+          path='/'
+          element = {
+            <>
+            <div className='login-page'>
+              <Login users={users}/>
+            </div>
+            </>
+          }
+        />
         <Route 
           path = '/tasks'
           element = {

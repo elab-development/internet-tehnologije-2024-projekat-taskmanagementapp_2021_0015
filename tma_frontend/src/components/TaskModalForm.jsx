@@ -2,10 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { IoCloseCircleOutline } from "react-icons/io5";
 import Buttons from './Buttons';
 import '../css/TaskModalForm.css';
+import {useAuth} from '../AuthContext';
 
 const TaskModalForm = (
     {initialData, nextId, onAdd, onUpdate, onClose, onDelete, 
     categories = [], status = [], priority = []}) => {  
+    
+    const {currentUser} = useAuth();
 
     const isNew = !initialData?.id;
     const [isEditing, setIsEditing] = useState(isNew); 
@@ -28,7 +31,8 @@ const TaskModalForm = (
     const handleSave = () => {
         const finalTask = {
             ...data,
-            id: data.id ?? nextId()
+            id: data.id ?? nextId(),
+            korisnik: currentUser.id
         }
 
         if(isNew){
