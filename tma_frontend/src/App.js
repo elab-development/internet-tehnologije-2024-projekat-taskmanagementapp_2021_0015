@@ -12,6 +12,7 @@ import Login from './components/Login';
 import Register from './components/Register';
 import ProtectedRoute from './components/ProtectedRoute';
 import Pagination from './components/Pagination';
+import ListSidebar from './components/ListSidebar';
 
 const status = ['Nije zapocet', 'U toku', 'Zavrseno'];
 const priority = ['Visok', 'Srednji', 'Nizak'];
@@ -64,6 +65,19 @@ function App() {
   const updateTask = updated => setTasks(prev => prev.map(t=> (t.id===updated.id ? updated : t)));
   const deleteTask = id => setTasks(prev => prev.filter(t => t.id !== id));
 
+  const filteredLists = lists.filter(list => {
+    const search = searchTerm.toLowerCase();
+
+    const listNameMatch = list.naziv.toLowerCase().includes(search);
+
+    const listTasksId = order.filter(o => o.listaId === list.id).map(o => o.zadatakId);
+    const listTasks = tasks.filter(t => listTasksId.includes(t.id));
+
+    const taskMatch = listTasks.some(t => t.naziv.toLowerCase().includes(search));
+
+    return listNameMatch || taskMatch;
+  })
+
   const handleSaveList = (list, listOrder) => {
     const isEditing = list && lists.some(l => l.id === list.id);
     if(isEditing){
@@ -98,7 +112,7 @@ function App() {
   const visibleTasks = filteredTasks.slice(taskPage*tasks_per_page, (taskPage+1)*tasks_per_page);
 
   const [listPage, setListPage] = useState(0);
-  const visibleLists = lists.slice(listPage*lists_per_page, (listPage+1)*lists_per_page);
+  const visibleLists = filteredLists.slice(listPage*lists_per_page, (listPage+1)*lists_per_page);
 
   const setTaskAsDone = (id) => {
     setTasks(prevTasks=> prevTasks.map(t => t.id===id ? {...t,status:'Zavrseno'} : t));
@@ -187,20 +201,34 @@ function App() {
               <div className='header'>
                 <NavBar type={'normal'}/>
               </div>
-              <div className='lists-page'>
-                <Lists
-                  tasks={tasks}
-                  lists={visibleLists}
-                  order={order}
-                  onSave={handleSaveList}
-                  onDelete={handleDeleteList}
-                  setTaskAsDone={setTaskAsDone}
-                />
-                <Pagination
-                  currentPage={listPage}
-                  totalItems={lists.length}
-                  itemsPerPage={lists_per_page}
-                  onPageChange={setListPage}
+              <div className='contents'>
+                <div className='main-container'>
+                  <Lists
+                    tasks={tasks}
+                    lists={visibleLists}
+                    order={order}
+                    onSave={handleSaveList}
+                    onDelete={handleDeleteList}
+                    setTaskAsDone={setTaskAsDone}
+                  />
+                  <Pagination
+                    currentPage={listPage}
+                    totalItems={lists.length}
+                    itemsPerPage={lists_per_page}
+                    onPageChange={setListPage}
+                  />
+                </div>
+                <ListSidebar
+                  searchTerm={searchTerm} setSearchTerm={setSearchTerm}
+                  status={status} priority={priority} categories={categories}
+                  openSelectMenu={openSelectMenu} setOpenSelectMenu={setOpenSelectMenu}
+                  openAddTaskMenu={openAddTaskMenu} setOpenAddTaskMenu={setOpenAddTaskMenu}
+                  tasks={tasks} addTask={addTask} updateTask={updateTask} deleteTask={deleteTask}
+                  openAddListMenu={openAddListMenu} setOpenAddListMenu={setOpenAddListMenu}
+                  lists={lists} order={order} saveList={handleSaveList} deleteList={handleDeleteList}
+                  openAddCategoryMenu={openAddCategoryMenu} setOpenAddCategoryMenu={setOpenAddCategoryMenu}
+                  openDeleteCategoryMenu={openDeleteCategoryMenu} setOpenDeleteCategoryMenu={setOpenDeleteCategoryMenu}
+                  addCategory={addCategory} deleteCategory={handleDeleteCategory}
                 />
               </div>
             </>
