@@ -2,7 +2,7 @@ import React from 'react'
 import List from './List'
 import '../css/Lists.css'
 
-const Lists = ({tasks, lists, order, onSave, onDelete}) => {
+const Lists = ({tasks, lists, order, onSave, onDelete, setTaskAsDone}) => {
   return (
     <div className='lists-container'>
         {lists.map((list)=> <List
@@ -12,6 +12,7 @@ const Lists = ({tasks, lists, order, onSave, onDelete}) => {
                                 order={order}
                                 onSave={onSave}
                                 onDelete={onDelete}
+                                setTaskAsDone={setTaskAsDone}
                             />)
 
         }

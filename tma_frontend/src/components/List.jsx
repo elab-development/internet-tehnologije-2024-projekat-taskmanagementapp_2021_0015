@@ -2,7 +2,7 @@ import React, {useState} from 'react'
 import { CiSquareCheck } from "react-icons/ci";
 import ListModalForm from './ListModalForm';
 
-const List = ({list, tasks, order, onSave, onDelete}) => {
+const List = ({list, tasks, order, onSave, onDelete, setTaskAsDone}) => {
     const [open, setOpen] = useState(false);
 
     const listOrder = order.filter(o => o.listaId === list.id);
@@ -10,10 +10,13 @@ const List = ({list, tasks, order, onSave, onDelete}) => {
 
   return (
     <>
-    <div className='list-card' onClick={()=>setOpen(true)}>
+    <div className='list-card' onDoubleClick={()=>setOpen(true)}>
         <h3 className='list-title'>{list.naziv}</h3>
         {listTasks.map(t => (
-            <p className='list-item'><CiSquareCheck size={20}/>{t.naziv}</p>
+            <p className={`list-item ${t.status === 'Zavrseno' ? 'done' : ''}`}>
+                <CiSquareCheck size={20} onClick={()=>setTaskAsDone(t.id)}/>
+                    {t.naziv}
+            </p>
         ))}
     </div>
 

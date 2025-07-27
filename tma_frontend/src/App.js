@@ -100,6 +100,10 @@ function App() {
   const [listPage, setListPage] = useState(0);
   const visibleLists = lists.slice(listPage*lists_per_page, (listPage+1)*lists_per_page);
 
+  const setTaskAsDone = (id) => {
+    setTasks(prevTasks=> prevTasks.map(t => t.id===id ? {...t,status:'Zavrseno'} : t));
+  }
+
   return (
     <BrowserRouter>
      <div>
@@ -190,6 +194,7 @@ function App() {
                   order={order}
                   onSave={handleSaveList}
                   onDelete={handleDeleteList}
+                  setTaskAsDone={setTaskAsDone}
                 />
                 <Pagination
                   currentPage={listPage}
