@@ -15,6 +15,24 @@ const Register = ({addUser, users}) => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        const nameRegex = /^[A-ZŠĐŽČĆ][a-zšđžčć]+$/;
+
+        if(!nameRegex.test(ime)){
+            alert('Ime mora pocinjati velikim slovom i sadrzati samo slova');
+            return;
+        }
+
+        if(!nameRegex.test(prezime)){
+            alert('Prezime mora pocinjati velikim slovom i sadrzati samo slova');
+            return;
+        }
+
+        const usernameExists = users.some(u => u.username === username);
+        if(usernameExists){
+            alert('Korisnicko ime vec postoji. Izaberite drugo.');
+            return;
+        }
+
         if(password!==passwordConfirm){
             alert('Lozinke se ne poklapaju');
             return;
