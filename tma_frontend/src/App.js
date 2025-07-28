@@ -1,7 +1,6 @@
-import logo from './logo.svg';
 import './App.css';
 import {zadaci, kategorije, liste, redosled, korisnici} from './Data';
-import {use, useEffect, useState} from 'react';
+import { useEffect, useState} from 'react';
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import NavBar from './components/NavBar';
 import Tasks from './components/Tasks';
@@ -16,8 +15,8 @@ import ListSidebar from './components/ListSidebar';
 
 const status = ['Nije zapocet', 'U toku', 'Zavrseno'];
 const priority = ['Visok', 'Srednji', 'Nizak'];
-const tasks_per_page = 3;
-const lists_per_page = 3;
+const tasks_per_page = 9;
+const lists_per_page = 6;
 
 function App() {
   const {currentUser} = useAuth();
@@ -34,8 +33,8 @@ function App() {
 
   useEffect(()=>{
     if(currentUser){
-      const user_tasks = zadaci.filter(z => z.korisnik == currentUser.id);
-      const user_lists = liste.filter(l => l.korisnik == currentUser.id);
+      const user_tasks = zadaci.filter(z => z.korisnik === currentUser.id);
+      const user_lists = liste.filter(l => l.korisnik === currentUser.id);
       const user_order = redosled.filter(r => user_lists.some(l => l.id === r.listaId));
       const user_categories = kategorije.filter(k => user_tasks.some(t => t.kategorija === k.id));
 
@@ -63,7 +62,41 @@ function App() {
 
   const addTask = newTask => setTasks(prev => [...prev,newTask]);
   const updateTask = updated => setTasks(prev => prev.map(t=> (t.id===updated.id ? updated : t)));
-  const deleteTask = id => setTasks(prev => prev.filter(t => t.id !== id));
+
+  const removeTaskFromOrder = (order, taskId) => {
+    return order.filter(o => o.zadatakId !== taskId);
+  }
+
+  const updateOrder = (order, listId) => {
+    const updatedList = order.filter(o => o.listaId === listId)
+    .sort((a,b) => a.rb - b.rb)
+    .map((o,index) => ({...o, rb:index+1}));
+
+    const others = order.filter(o => o.listaId !== listId);
+    return [...others, ...updatedList];
+  }
+
+  const deleteTask = id => {
+    const involvedOrders = order.filter(o => o.zadatakId === id);
+
+    if(involvedOrders.length>0){
+      const confirmDelete = window.confirm('Zadatak se nalazi u listi. Da li zaista zelite da ga obrisete?');
+      if(!confirmDelete) return;
+    }
+
+    setTasks(prev => prev.filter(t => t.id !== id));
+    setOrder(prev => {
+      const withoutTask = removeTaskFromOrder(prev,id);
+      const affectedLists = involvedOrders.map(o => o.listaId);
+
+      let updatedOrder = [...withoutTask];
+      affectedLists.forEach(listId => {
+        updatedOrder = updateOrder(updatedOrder, listId);
+      })
+
+      return updatedOrder;
+    })
+  }
 
   const filteredLists = lists.filter(list => {
     const search = searchTerm.toLowerCase();
