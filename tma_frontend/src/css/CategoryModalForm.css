@@ -57,3 +57,10 @@
     cursor: pointer;
     width: 150px;
 }
+
+.category-details h3{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
