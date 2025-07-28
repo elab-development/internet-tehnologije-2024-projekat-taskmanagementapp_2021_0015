@@ -21,6 +21,12 @@ const ListModalForm = ({list=null, tasks, order, onSave, onDelete, onClose, next
 
     const [selectPage, setSelectPage] = useState(0);
     const visibleTasks = tasks.slice(selectPage*max_tasks, (selectPage+1)*max_tasks);
+
+    useEffect(()=>{
+        if(isSelecting){
+            setSelectPage(0);
+        }
+    },[isSelecting]);
     
     useEffect(()=>{
         if(isEditing){
