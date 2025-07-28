@@ -3,6 +3,9 @@ import { IoCloseCircleOutline } from "react-icons/io5";
 import MultiSelectButtons from './MultiSelectButtons';
 import '../css/ListModalForm.css';
 import {useAuth} from '../AuthContext';
+import Pagination from './Pagination';
+
+const max_tasks = 10;
 
 const ListModalForm = ({list=null, tasks, order, onSave, onDelete, onClose, nextId}) => {
     const {currentUser} = useAuth();
@@ -15,6 +18,9 @@ const ListModalForm = ({list=null, tasks, order, onSave, onDelete, onClose, next
     const [taskOrder, setTaskOrder] = useState([]);
     const [isSelecting, setIsSelecting] = useState(false);
     const [tempTasks, setTempTasks] = useState([]);
+
+    const [selectPage, setSelectPage] = useState(0);
+    const visibleTasks = tasks.slice(selectPage*max_tasks, (selectPage+1)*max_tasks);
     
     useEffect(()=>{
         if(isEditing){
@@ -109,9 +115,20 @@ const ListModalForm = ({list=null, tasks, order, onSave, onDelete, onClose, next
                     <h2>Zadaci</h2>
                     <div className='add-task-buttons'>
                         <MultiSelectButtons
-                            items={tasks}
+                            items={visibleTasks}
                             selected={tempTasks.map(t=>t.id)}
                             onToggle={handleToggleTask}
+                            disabled={tempTasks.length >= max_tasks ? 
+                                tasks.filter(t => !tempTasks.find(sel => sel.id === t.id)).map(t => t.id) : []
+                            }
+                        />
+                    </div>
+                    <div className='tasks-pagination'>
+                        <Pagination
+                            currentPage={selectPage}
+                            totalItems={tasks.length}
+                            itemsPerPage={max_tasks}
+                            onPageChange={setSelectPage}
                         />
                     </div>
                     <div className='buttons'>
