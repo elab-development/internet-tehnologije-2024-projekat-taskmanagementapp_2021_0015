@@ -39,15 +39,12 @@ class DatabaseSeeder extends Seeder
         
         Status::create([
             'name'=>'Not started',
-            'desc'=>fake()->sentence()
         ]);
         Status::create([
             'name'=>'Active',
-            'desc'=>fake()->sentence()
         ]);
         Status::create([
             'name'=>'Finished',
-            'desc'=>fake()->sentence()
         ]);
 
 

@@ -18,7 +18,6 @@ class TaskListFactory extends Factory
     {
         return [
             'name'=>fake()->word(),
-            'description'=>fake()->sentence(),
         ];
     }
 }

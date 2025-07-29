@@ -30,7 +30,6 @@ class TaskListController extends Controller
     {
         $validator = Validator::make($request->all(),[
             'name' => 'required|string|max:255',
-            'description' => 'string|max:255'
         ]);
 
         if($validator->fails()){
@@ -39,7 +38,6 @@ class TaskListController extends Controller
 
         $task_list = TaskList::create([
             'name' => $request->name,
-            'description' => $request->description,
             'user_id' => Auth::user()->id
         ]);
 
@@ -52,7 +50,6 @@ class TaskListController extends Controller
 
         $validator = Validator::make($request->all(),[
             'name' => 'required|string|max:255',
-            'description' => 'string|max:255'
         ]);
 
         if($validator->fails()){
@@ -60,7 +57,6 @@ class TaskListController extends Controller
         }
 
         $task_list->name = $request->name;
-        $task_list->description = $request->description;
 
         $task_list->save();
 

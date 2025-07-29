@@ -79,7 +79,7 @@ class TaskController extends Controller
             return response()->json($validator->errors());
         }
 
-        $query = Task::query();
+        $query = Task::where('user_id', Auth::user()->id);
 
         if($request->has('status')){
             $query->where('status',$request->status);
