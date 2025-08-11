@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ListOrderController;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\TaskController;
@@ -11,19 +12,6 @@ use App\Models\Category;
 use App\Models\Priority;
 use App\Models\Status;
 use Illuminate\Support\Facades\Route;
-
-//prikaz dostupnih kategorija
-Route::get('categories', function(){
-    $categories = Category::all();
-    return CategoryResource::collection($categories);
-});
-Route::get('categories/{id}', function(string $id){
-    $category = Category::find($id);
-    if(is_null($category)){
-        return response()->json('Category not found',404);
-    }
-    return new CategoryResource($category);
-})->whereNumber('id');
 
 //prikaz dostupnih statusa
 Route::get('statuses', function(){
@@ -40,6 +28,8 @@ Route::get('priorities', function(){
 
 Route::post('register',[AuthController::class,'register']);
 Route::post('login',[AuthController::class,'login']);
+
+Route::get('users',[UserController::class, 'index']);
 
 Route::group(['middleware'=> ['auth:sanctum']], function(){
     //rute za prikaz, azuriranje i brisanje korisnika
@@ -64,6 +54,11 @@ Route::group(['middleware'=> ['auth:sanctum']], function(){
     Route::post('task_lists',[TaskListController::class,'store']);
     Route::put('task_lists/{id}',[TaskListController::class,'update']);
     Route::delete('task_lists/{id}',[TaskListController::class,'destroy']);
+
+    //rute za kategorije
+    Route::get('categories', [CategoryController::class, 'index']);
+    Route::post('categories', [CategoryController::class, 'store']);
+    Route::delete('categories/{id}',[CategoryController::class, 'destroy']);
 
     //rute za resetovanje sifre
     Route::post('password/forgot',[PasswordController::class,'sendResetLink']);
