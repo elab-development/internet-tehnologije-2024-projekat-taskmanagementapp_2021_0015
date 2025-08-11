@@ -4,69 +4,63 @@ import MultiSelectButtons from './MultiSelectButtons';
 import '../css/ListModalForm.css';
 import {useAuth} from '../AuthContext';
 import Pagination from './Pagination';
+import axios from 'axios';
 
-const max_tasks = 10;
 
-const ListModalForm = ({list=null, tasks, order, onSave, onDelete, onClose, nextId}) => {
+
+const ListModalForm = ({list=null, tasks, order, onSave, onDelete, onClose}) => {
     const {currentUser} = useAuth();
-
     const isEditing = list!==null;
     const [listData, setListData] = useState(
-        list || {id: nextId(), naziv: ''}
+        list || {name: ''}
     )
-    const [chosenTasks, setChosenTasks] = useState([]);
-    const [taskOrder, setTaskOrder] = useState([]);
+    const [listTasks, setListTasks] = useState([]); //trenutno odabrani zadaci u listi
     const [isSelecting, setIsSelecting] = useState(false);
-    const [tempTasks, setTempTasks] = useState([]);
 
-    const [selectPage, setSelectPage] = useState(0);
-    const visibleTasks = tasks.slice(selectPage*max_tasks, (selectPage+1)*max_tasks);
-
-    useEffect(()=>{
-        if(isSelecting){
-            setSelectPage(0);
-        }
-    },[isSelecting]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const max_tasks = 9;
     
     useEffect(()=>{
         if(isEditing){
-            const listOrder = order.filter(o => o.listaId === list.id);
-            const listTasks = listOrder.map(o => tasks.find(t => t.id === o.zadatakId))
-            setChosenTasks(listTasks);
-            setTaskOrder(listOrder);
-        }
-    },[list, isEditing, tasks, order]);
-
-    const handleToggleTask = (id) => {
-        const alreadySelected = tempTasks.find(t => t.id === id);
-        let updated;
-        if(alreadySelected){
-            updated = tempTasks.filter(t => t.id!==id);
+            const listOrder = order.filter(o => o.task_list_id === list.id);
+            const assignedTasks = listOrder.map(o => tasks.find(t => t.id === o.task_id));
+            setListTasks(assignedTasks);
         }else{
-            const newTask = tasks.find(t => t.id === id);
-            updated = [...tempTasks, newTask];
+            setListTasks([]);
         }
-        setTempTasks(updated);
+    },[list, isEditing, order, tasks]);
+
+    const indexOfLastTask = currentPage*max_tasks;
+    const indexOfFirstTask = indexOfLastTask - max_tasks;
+    const paginatedTasks = tasks.slice(indexOfFirstTask, indexOfLastTask); 
+
+    const handleToggleTask = (taskId) => {
+        let updated;
+        if(listTasks.some(t => t.id === taskId)){
+            updated = tasks.filter(t => t.id !== taskId);
+        }else{
+            const taskToAdd = tasks.find(t => t.id === taskId);
+            if(taskToAdd) updated = [...listTasks, taskToAdd];
+        }
+        setListTasks(updated);
     }
 
     const handleConfirmTasks = () => {
-        setChosenTasks(tempTasks);
-        const newOrder = tempTasks.map((t,index) => ({
-            listaId: listData.id,
-            zadatakId: t.id,
-            rb: index 
-        }));
-        
-        setTaskOrder(newOrder);
         setIsSelecting(false);
     }
 
     const handleSave = () => {
+        const newOrder = listTasks.map((t,index) => ({
+            task_list_id: listData.id,
+            task_id: t.id,
+            rb: index 
+        }));
+
         const finalList = {
             ...listData,
-            korisnik: currentUser.id
+            user: currentUser
         }
-        onSave(finalList, taskOrder);
+        onSave(finalList, newOrder);
         onClose();
     }
 
@@ -87,13 +81,13 @@ const ListModalForm = ({list=null, tasks, order, onSave, onDelete, onClose, next
             <input
                 className='input'
                 placeholder='Naziv liste'
-                value={listData.naziv}
-                onChange={e => setListData({...listData, naziv: e.target.value})}
+                value={listData.name}
+                onChange={e => setListData({...listData, name: e.target.value})}
             />
 
-            {chosenTasks.length > 0 && chosenTasks.map((t,i) => (
+            {listTasks.length>0 && listTasks.map((t,i) => (
                 <p key={t.id} className='item'>
-                    {i + 1}. {t.naziv}
+                    {i + 1}. {t.name}
                 </p>
             ))}
 
@@ -101,7 +95,7 @@ const ListModalForm = ({list=null, tasks, order, onSave, onDelete, onClose, next
                 <button
                     className='btn-add'
                     onClick={()=>{
-                        setTempTasks([...chosenTasks]);
+                        setCurrentPage(1);
                         setIsSelecting(true);
                     }}>
                         Dodaj zadatke
@@ -121,20 +115,20 @@ const ListModalForm = ({list=null, tasks, order, onSave, onDelete, onClose, next
                     <h2>Zadaci</h2>
                     <div className='add-task-buttons'>
                         <MultiSelectButtons
-                            items={visibleTasks}
-                            selected={tempTasks.map(t=>t.id)}
+                            items={paginatedTasks}
+                            selected={listTasks.map(t => t.id)}
                             onToggle={handleToggleTask}
-                            disabled={tempTasks.length >= max_tasks ? 
-                                tasks.filter(t => !tempTasks.find(sel => sel.id === t.id)).map(t => t.id) : []
+                            disabled={listTasks.length >= max_tasks ? 
+                                paginatedTasks.filter(t => !listTasks.includes(t.id)).map(t => t.id) : []
                             }
                         />
                     </div>
                     <div className='tasks-pagination'>
                         <Pagination
-                            currentPage={selectPage}
+                            currentPage={currentPage}
                             totalItems={tasks.length}
                             itemsPerPage={max_tasks}
-                            onPageChange={setSelectPage}
+                            onPageChange={setCurrentPage}
                         />
                     </div>
                     <div className='buttons'>

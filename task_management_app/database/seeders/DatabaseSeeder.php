@@ -48,9 +48,17 @@ class DatabaseSeeder extends Seeder
         ]);
 
 
-        User::factory(3)->create();
-        $this->call(TaskSeeder::class);
-        $this->call(TaskListSeeder::class);
+        User::factory(5)->create()->each(function ($user) {
+            $categories = Category::factory(3)->create(['user_id' => $user->id]);
 
+            Task::factory(5)->create([
+                'status'=>Status::all()->random()->name,
+                'priority'=>Priority::all()->random()->name,
+                'user_id' => $user->id,
+            ])->each(function ($task) use ($categories) {
+                $task->category_id = $categories->random()->id;
+                $task->save();
+            });
+        });
     }
 }

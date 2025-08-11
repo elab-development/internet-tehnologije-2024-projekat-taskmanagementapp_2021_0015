@@ -6,6 +6,7 @@ use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -13,17 +14,25 @@ class TaskController extends Controller
 {
     public function index(Request $request)
     {
+        
         $user = Auth::user();
         
         $search = $request->query('search');
+        $perPage = (int) $request->query('per_page', 9);
 
         $query = Task::where('user_id',$user->id);
         if($search){
             $query->where('name','like',"%{$search}%");
         }
 
-        $tasks = $query->paginate(10);
-        return TaskResource::collection($tasks);
+        $tasks = $query->paginate($perPage);
+        
+        return response()->json([
+            'tasks' => TaskResource::collection($tasks),
+            'current_page' => $tasks -> currentPage(),
+            'total' => $tasks -> total(),
+            'last_page' => $tasks -> lastPage()
+        ]);   
     }
 
     public function create()
@@ -35,9 +44,9 @@ class TaskController extends Controller
     {
         $validator = Validator::make($request->all(),[
             'name' => 'required|string|max:255',
-            'description' => 'string|max:255',
-            'due_date' => 'date|after:today',
-            'category_id' => 'required',
+            'description' => 'string|max:255|nullable',
+            'due_date' => 'date|after:today|nullable',
+            'category_id' => 'nullable',
             'status' => ['required',Rule::in(['Not started','Active','Finished'])],
             'priority' => ['required',Rule::in(['low','medium','high'])]
         ]);
@@ -56,7 +65,8 @@ class TaskController extends Controller
             'user_id' => Auth::user()->id
         ]);
 
-        return response()->json(['message'=>'Task successfully created!', new TaskResource($task)]);
+        return response()->json(['message'=>'Task successfully created!', 
+                                'task' => new TaskResource($task)]);
     }
 
     public function show(Task $task)
@@ -93,8 +103,16 @@ class TaskController extends Controller
             $query->where('category_id',$request->category_id);
         }
 
-        $tasks = $query->get();
-        return TaskResource::collection($tasks);
+        $perPage = (int) $request->query('per_page', 9);
+        $tasks = $query->paginate($perPage);
+        return response()->json([
+            'tasks' => TaskResource::collection($tasks),
+            'current_page' => $tasks -> currentPage(),
+            'total' => $tasks -> total(),
+            'last_page' => $tasks -> lastPage()
+        ]);  
+        // $tasks = $query->get();
+        // return TaskResource::collection($tasks);
     }
 
     public function edit(Task $task)
@@ -106,9 +124,9 @@ class TaskController extends Controller
     {
         $validator = Validator::make($request->all(),[
             'name' => 'required|string|max:255',
-            'description' => 'string|max:255',
-            'due_date' => 'date|after:today',
-            'category_id' => 'required',
+            'description' => 'string|max:255|nullable',
+            'due_date' => 'date|after:today|nullable',
+            'category_id' => 'nullable',
             'status' => ['required',Rule::in(['Not started','Active','Finished'])],
             'priority' => ['required',Rule::in(['low','medium','high'])],
         ]);
@@ -126,7 +144,8 @@ class TaskController extends Controller
 
         $task->save();
 
-        return response()->json(['message'=>'Task successfully updated!', new TaskResource($task)]);
+        return response()->json(['message'=>'Task successfully updated!', 
+                                'task' => new TaskResource($task)]);
     }
 
     public function destroy(Task $task)

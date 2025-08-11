@@ -5,17 +5,17 @@ import ListModalForm from './ListModalForm';
 const List = ({list, tasks, order, onSave, onDelete, setTaskAsDone}) => {
     const [open, setOpen] = useState(false);
 
-    const listOrder = order.filter(o => o.listaId === list.id);
-    const listTasks = listOrder.map(o => tasks.find(t => t.id === o.zadatakId))
+    const listOrder = order.filter(o => o.task_list_id === list.id);
+    const listTasks = listOrder.map(o => tasks.find(t => t.id === o.task_id));
 
   return (
     <>
     <div className='list-card' onDoubleClick={()=>setOpen(true)}>
-        <h3 className='list-title'>{list.naziv}</h3>
+        <h3 className='list-title'>{list.name}</h3>
         {listTasks.map(t => (
-            <p className={`list-item ${t.status === 'Zavrseno' ? 'done' : ''}`}>
-                <CiSquareCheck size={20} onClick={()=>setTaskAsDone(t.id)}/>
-                    {t.naziv}
+            <p key={t.id} className={`list-item ${t.status === 'Finished' ? 'done' : ''}`}>
+                {<CiSquareCheck size={20} onClick={()=>setTaskAsDone(t)}/>}
+                    {t.name}
             </p>
         ))}
     </div>
@@ -28,7 +28,6 @@ const List = ({list, tasks, order, onSave, onDelete, setTaskAsDone}) => {
             onSave={onSave}
             onDelete={onDelete}
             onClose={()=>setOpen(false)}
-            nextId={null}
         />
     )}
     </>

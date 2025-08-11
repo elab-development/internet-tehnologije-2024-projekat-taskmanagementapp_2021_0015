@@ -5,6 +5,7 @@ import '../css/Tasks.css'
 const Tasks = ({tasks, categories, status, priority, onAdd, onUpdate, onDelete}) => {
   return (
     <div className='task-container'>
+      
         {tasks.map((task) => <Task
                                 key={task.id}
                                 task={task}

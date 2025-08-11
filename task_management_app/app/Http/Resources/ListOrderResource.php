@@ -12,18 +12,24 @@ class ListOrderResource extends JsonResource
      *
      * @return array<string, mixed>
      */
-    public static $wrap = 'task list';
     
     public function toArray(Request $request): array
     {
-        return [
-            'task_list_id' => $this->id,
-            'tasks' => $this->tasks->map(function($task){
-                return [
-                    'rb' => $task->pivot->num,
-                    'task' => new TaskResource($task)
-                ];
-            })
-        ];
+        // return [
+        //     'task_list_id' => $this->id,
+        //     'tasks' => $this->tasks->map(function($task){
+        //         return [
+        //             'rb' => $task->pivot->num,
+        //             'task' => new TaskResource($task)
+        //         ];
+        //     })
+        // ];
+        return $this->tasks->map(function($task){
+            return [
+                'task_list_id' => $this->id,
+                'task_id' => $task->id,
+                'rb' => $task->pivot->num
+            ];
+        })->toArray();
     }
 }

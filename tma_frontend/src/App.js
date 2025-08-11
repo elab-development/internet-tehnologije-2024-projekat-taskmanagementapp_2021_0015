@@ -1,5 +1,4 @@
 import './App.css';
-import {zadaci, kategorije, liste, redosled, korisnici} from './Data';
 import { useEffect, useState} from 'react';
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
 import NavBar from './components/NavBar';
@@ -12,127 +11,242 @@ import Register from './components/Register';
 import ProtectedRoute from './components/ProtectedRoute';
 import Pagination from './components/Pagination';
 import ListSidebar from './components/ListSidebar';
+import axios from 'axios';
 
-const status = ['Nije zapocet', 'U toku', 'Zavrseno'];
-const priority = ['Visok', 'Srednji', 'Nizak'];
-const tasks_per_page = 9;
-const lists_per_page = 6;
 
 function App() {
-  const {currentUser} = useAuth();
-
-  const [users, setUsers] = useState(korisnici);
-  const addUser = (newUser) => {
-    setUsers(prev=>[...prev,newUser]);
-  }
+  const {currentUser, token} = useAuth();
 
   const [tasks, setTasks] = useState([]);
   const [categories, setCategories] = useState([]);
   const [lists, setLists] = useState([]);
   const [order, setOrder] = useState([]);
+  const [status, setStatus] = useState([]);
+  const [priority, setPriority] = useState([]);
 
-  useEffect(()=>{
-    if(currentUser){
-      const user_tasks = zadaci.filter(z => z.korisnik === currentUser.id);
-      const user_lists = liste.filter(l => l.korisnik === currentUser.id);
-      const user_order = redosled.filter(r => user_lists.some(l => l.id === r.listaId));
-      const user_categories = kategorije.filter(k => user_tasks.some(t => t.kategorija === k.id));
-
-      setTasks(user_tasks);
-      setLists(user_lists);
-      setOrder(user_order);
-      setCategories(user_categories);
-    }
-  }, [currentUser]);
-
-  const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState(null);
   const [filterPriority, setFilterPriority] = useState(null);
   const [filterCategory, setFilterCategory] = useState(null);
-  
-  const filteredTasks = tasks.filter(task => {
-    const searchMatch = task.naziv.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    task.opis.toLowerCase().includes(searchTerm.toLowerCase());
-    const statusMatch = filterStatus ? task.status === filterStatus : true;
-    const priorityMatch = filterPriority ? task.prioritet === filterPriority : true;
-    const categoryMatch = filterCategory ? task.kategorija === filterCategory : true;
 
-    return searchMatch && statusMatch && priorityMatch && categoryMatch;
-  })
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const tasks_per_page = 9;
 
-  const addTask = newTask => setTasks(prev => [...prev,newTask]);
-  const updateTask = updated => setTasks(prev => prev.map(t=> (t.id===updated.id ? updated : t)));
+  const [listsCurrentPage, setListsCurrentPage] = useState(1);
+  const [listsTotalItems, setListsTotalItems] = useState(0);
+  const lists_per_page = 6;
 
-  const removeTaskFromOrder = (order, taskId) => {
-    return order.filter(o => o.zadatakId !== taskId);
-  }
+  const fetchTasks = async () => {
+    let response;
+    const hasFilters = filterStatus || filterPriority || filterCategory;
 
-  const updateOrder = (order, listId) => {
-    const updatedList = order.filter(o => o.listaId === listId)
-    .sort((a,b) => a.rb - b.rb)
-    .map((o,index) => ({...o, rb:index+1}));
+    const params = {
+      page: currentPage,
+      per_page: tasks_per_page
+    };
 
-    const others = order.filter(o => o.listaId !== listId);
-    return [...others, ...updatedList];
-  }
+    if(filterStatus) params.status = filterStatus;
+    if(filterPriority) params.priority = filterPriority;
+    if(filterCategory) params.category_id = filterCategory;
 
-  const deleteTask = id => {
-    const involvedOrders = order.filter(o => o.zadatakId === id);
-
-    if(involvedOrders.length>0){
-      const confirmDelete = window.confirm('Zadatak se nalazi u listi. Da li zaista zelite da ga obrisete?');
-      if(!confirmDelete) return;
+    if(hasFilters){
+      response = await axios.get("api/tasks/filter", {
+        headers: { Authorization: `Bearer ${token}` },
+        params
+      });
+    }else{
+      response = await axios.get("api/tasks", {
+        headers: { Authorization: `Bearer ${token}` },
+        params
+      })
+    }
+    console.log("Fetched tasks response:", response.data);
+    setTasks(response.data.tasks);
+    setCurrentPage(response.data.current_page);
+    setTotalItems(response.data.total);
     }
 
-    setTasks(prev => prev.filter(t => t.id !== id));
-    setOrder(prev => {
-      const withoutTask = removeTaskFromOrder(prev,id);
-      const affectedLists = involvedOrders.map(o => o.listaId);
+    const fetchLists = async() => {
+      const response = await axios.get("api/task_lists", {
+        headers: { Authorization: `Bearer ${token}` },
+        params: {
+          page: listsCurrentPage,
+          per_page: lists_per_page
+        }
+      });
 
-      let updatedOrder = [...withoutTask];
-      affectedLists.forEach(listId => {
-        updatedOrder = updateOrder(updatedOrder, listId);
-      })
+      setLists(response.data.task_lists);
+      setListsCurrentPage(response.data.current_page);
+      setListsTotalItems(response.data.total);
 
-      return updatedOrder;
-    })
-  }
+      await fetchAllTasks();
+    }
+
+  useEffect(()=>{
+    const fetchData = async ()=> {
+      try {
+        console.log("Fetch data se poziva");
+        const [orderResponse, categoriesResponse, statusResponse, priorityResponse] = await Promise.all([
+          axios.get("api/lists", {headers: { Authorization: `Bearer ${token}` }}),
+          axios.get("api/categories", {headers: { Authorization: `Bearer ${token}` }}),
+          axios.get("api/statuses"),
+          axios.get("api/priorities")
+        ]);
+  
+        setOrder(orderResponse.data.data.flat());
+        setCategories(categoriesResponse.data.data);
+        setStatus(statusResponse.data.map(s => s.name));
+        setPriority(priorityResponse.data.map(p => p.name));
+      }
+      catch (err) {
+        console.error("Greska pri ucitavanju podataka",err);
+      } 
+    }
+
+    if(currentUser){
+      fetchData();
+    }
+    
+  }, [currentUser]);
+
+
+  useEffect(() => {
+    if(!token) return;
+    fetchTasks();
+  },[filterStatus, filterPriority, filterCategory, token, currentPage]);
+
+  useEffect(() => {
+    if(!token) return;
+    fetchLists();
+  }, [listsCurrentPage, token]);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  
+  
+  const filteredTasks = (tasks ?? []).filter(task => {
+    const searchMatch = task.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    task.description?.toLowerCase().includes(searchTerm.toLowerCase());
+
+    return searchMatch;
+  });
 
   const filteredLists = lists.filter(list => {
     const search = searchTerm.toLowerCase();
 
-    const listNameMatch = list.naziv.toLowerCase().includes(search);
+    const listNameMatch = list.name.toLowerCase().includes(search);
 
-    const listTasksId = order.filter(o => o.listaId === list.id).map(o => o.zadatakId);
+    const listTasksId = order.filter(o => o.task_list_id === list.id).map(o => o.task_id);
     const listTasks = tasks.filter(t => listTasksId.includes(t.id));
 
-    const taskMatch = listTasks.some(t => t.naziv.toLowerCase().includes(search));
+    const taskMatch = listTasks.some(t => t.name.toLowerCase().includes(search));
 
     return listNameMatch || taskMatch;
-  })
+  });
 
-  const handleSaveList = (list, listOrder) => {
-    const isEditing = list && lists.some(l => l.id === list.id);
-    if(isEditing){
-      setLists(prev => prev.map(l => (l.id === list.id ? list : l)));
-      setOrder(prev => [...prev.filter(o => o.listaId !== list.id),...listOrder])
+  const addTask = async (newTask) => {
+    const response = await axios.post("api/tasks", newTask, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    fetchTasks()
+  }
+
+  const updateTask = async (updatedTask) => {
+    try {
+      const response = await axios.put("api/tasks/"+ updatedTask.id, updatedTask,{
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const updated = response.data.task;
+      fetchTasks();
+    } catch (error) {
+      console.error("Greska pri update-u:", error);
+    }
+  }
+  
+  const deleteTask = async (id) => {
+    const inList = order.some(o => o.task_id === id);
+
+    if(inList){
+      const confirmDelete = window.confirm(
+        "Zadatak se nalazi u listi. Da li zaista zelite da ga obrisete?"
+      );
+      if(!confirmDelete) return;
+    }
+
+    await axios.delete("api/tasks/"+ id, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    fetchTasks();
+    setOrder(prev => prev.filter(o => o.task_id !== id));
+  }
+
+
+  const handleSaveList = async (list, listOrder) => {
+    if(!list.id){
+      const response = await axios.post("api/task_lists", {name: list.name}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const newList = response.data.task_list;
+      const listId = newList.id;
+
+      for(const o of listOrder){
+        await axios.post("api/lists", {
+          task_list_id: listId,
+          task_id: o.task_id
+        },{
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      }
+      fetchLists();
+      const updatedOrder = listOrder.map(o => ({...o, task_list_id : listId}));
+      setOrder(prev => [...prev,...updatedOrder]);
+
     }else{
-      setLists(prev => [...prev, list]);
-      setOrder(prev => [...prev,...listOrder]);
+      await axios.put("api/task_lists/"+ list.id, {name: list.name}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      for(const old of order.filter(o => o.task_list_id === list.id)){
+        await axios.delete("api/lists/"+list.id+"/"+old.task_id, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+      }
+
+      for(const o of listOrder){
+        await axios.post("api/lists", {
+          task_list_id: list.id,
+          task_id: o.task_id
+        },{
+          headers: { Authorization: `Bearer ${token}` }
+        })
+      }
+      fetchLists();
+      setOrder(prev => [...prev.filter(o => o.task_list_id !== list.id),...listOrder]);
     }
   }
 
-  const handleDeleteList = (id) => {
-    setLists(prev => prev.filter(l => l.id !== id));
+  const handleDeleteList = async (id) => {
+    await axios.delete("api/task_lists/"+id, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    fetchLists();
     setOrder(prev => prev.filter(o => o.listaId !== id));
   }
 
-  const addCategory = newCategory => setCategories(prev => [...prev,newCategory]);
-  const deleteCategory = id => setCategories(prev => prev.filter(c => c.id !== id));
+  const addCategory = async (newCategory) => {
+    console.log("Dobijena kategorija: ", newCategory);
+    const response = await axios.post("api/categories", newCategory, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    setCategories(prev => [...prev, response.data.category]);
+  }
 
-  const handleDeleteCategory = (id) => {
-    setTasks(prevTasks => prevTasks.map(t => t.kategorija===id ? {...t,kategorija:null} : t))
-    deleteCategory(id);
+  const deleteCategory = async (id) => {
+    await axios.delete("api/categories/"+ id, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    setCategories(prev => prev.filter(c => c.id !== id));
+    setTasks(prev => prev.map(t => t.category_id===id ? {...t,category_id:null} : t));
   }
 
   const [openSelectMenu, setOpenSelectMenu] = useState(false);
@@ -141,14 +255,24 @@ function App() {
   const [openAddCategoryMenu, setOpenAddCategoryMenu] = useState(false);
   const [openDeleteCategoryMenu, setOpenDeleteCategoryMenu] = useState(false);
 
-  const [taskPage, setTaskPage] = useState(0);
-  const visibleTasks = filteredTasks.slice(taskPage*tasks_per_page, (taskPage+1)*tasks_per_page);
+  const setTaskAsDone = async (task) => {
+    const updatedTask = {
+      ...task,
+      status: 'Finished'
+    }
+    await updateTask(updatedTask);
+  }
 
-  const [listPage, setListPage] = useState(0);
-  const visibleLists = filteredLists.slice(listPage*lists_per_page, (listPage+1)*lists_per_page);
+  const [allTasks, setAllTasks] = useState([]);
 
-  const setTaskAsDone = (id) => {
-    setTasks(prevTasks=> prevTasks.map(t => t.id===id ? {...t,status:'Zavrseno'} : t));
+  const fetchAllTasks = async () => {
+    const response = await axios.get("api/tasks", {
+      headers: { Authorization: `Bearer ${token}`},
+      params: {
+        per_page: 1000
+      }
+    });
+    setAllTasks(response.data.tasks);
   }
 
   return (
@@ -163,7 +287,7 @@ function App() {
               <NavBar type={'auth'}/>
             </div>
             <div className='login-page'>
-              <Register addUser={addUser} users={users}/>
+              <Register />
             </div>
             </>
           }
@@ -176,7 +300,7 @@ function App() {
               <NavBar type={'auth'}/>
             </div>
             <div className='login-page'>
-              <Login users={users}/>
+              <Login />
             </div>
             </>
           }
@@ -192,7 +316,7 @@ function App() {
               <div className='contents'>
                 <div className='main-container'>
                   <Tasks 
-                    tasks = {visibleTasks}
+                    tasks = {filteredTasks}
                     categories = {categories}
                     status= {status}
                     priority= {priority} 
@@ -201,10 +325,10 @@ function App() {
                     onDelete={deleteTask}
                   />
                   <Pagination
-                    currentPage={taskPage}
-                    totalItems={filteredTasks.length}
+                    currentPage={currentPage}
+                    totalItems={totalItems}
                     itemsPerPage={tasks_per_page}
-                    onPageChange={setTaskPage}
+                    onPageChange={setCurrentPage}
                   />
                 </div>
                 <Sidebar
@@ -219,7 +343,7 @@ function App() {
                   lists={lists} order={order} saveList={handleSaveList} deleteList={handleDeleteList}
                   openAddCategoryMenu={openAddCategoryMenu} setOpenAddCategoryMenu={setOpenAddCategoryMenu}
                   openDeleteCategoryMenu={openDeleteCategoryMenu} setOpenDeleteCategoryMenu={setOpenDeleteCategoryMenu}
-                  addCategory={addCategory} deleteCategory={handleDeleteCategory}
+                  addCategory={addCategory} deleteCategory={deleteCategory}
                 />
               </div>
             </>
@@ -237,18 +361,18 @@ function App() {
               <div className='contents'>
                 <div className='main-container'>
                   <Lists
-                    tasks={tasks}
-                    lists={visibleLists}
+                    tasks={allTasks}
+                    lists={filteredLists}
                     order={order}
                     onSave={handleSaveList}
                     onDelete={handleDeleteList}
                     setTaskAsDone={setTaskAsDone}
                   />
                   <Pagination
-                    currentPage={listPage}
-                    totalItems={lists.length}
+                    currentPage={listsCurrentPage}
+                    totalItems={listsTotalItems}
                     itemsPerPage={lists_per_page}
-                    onPageChange={setListPage}
+                    onPageChange={setListsCurrentPage}
                   />
                 </div>
                 <ListSidebar
@@ -261,7 +385,7 @@ function App() {
                   lists={lists} order={order} saveList={handleSaveList} deleteList={handleDeleteList}
                   openAddCategoryMenu={openAddCategoryMenu} setOpenAddCategoryMenu={setOpenAddCategoryMenu}
                   openDeleteCategoryMenu={openDeleteCategoryMenu} setOpenDeleteCategoryMenu={setOpenDeleteCategoryMenu}
-                  addCategory={addCategory} deleteCategory={handleDeleteCategory}
+                  addCategory={addCategory} deleteCategory={deleteCategory}
                 />
               </div>
             </>

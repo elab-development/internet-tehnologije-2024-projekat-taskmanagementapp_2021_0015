@@ -5,7 +5,7 @@ import '../css/TaskModalForm.css';
 import {useAuth} from '../AuthContext';
 
 const TaskModalForm = (
-    {initialData, nextId, onAdd, onUpdate, onClose, onDelete, 
+    {initialData, onAdd, onUpdate, onClose, onDelete, 
     categories = [], status = [], priority = []}) => {  
     
     const {currentUser} = useAuth();
@@ -14,12 +14,12 @@ const TaskModalForm = (
     const [isEditing, setIsEditing] = useState(isNew); 
     const createInitialData = (initialData) => ({
         id: initialData?.id ?? null,
-        naziv: initialData?.naziv ?? '',
-        opis: initialData?.opis ?? '',
-        rok: initialData?.rok ?? '',
-        status: initialData?.status ?? '',
-        prioritet: initialData?.prioritet ?? '',
-        kategorija: initialData?.kategorija ?? ''
+        name: initialData?.name ?? '',
+        description: initialData?.description ?? '',
+        due_date: initialData?.due_date ?? '',
+        status: initialData?.status?? '',
+        priority: initialData?.priority ?? '',
+        category_id: initialData?.category?.id ?? ''
     })
     const [data, setData] = useState(createInitialData(initialData));
 
@@ -31,8 +31,8 @@ const TaskModalForm = (
     const handleSave = () => {
         const finalTask = {
             ...data,
-            id: data.id ?? nextId(),
-            korisnik: currentUser.id
+            category_id: data.category_id,
+            user:currentUser
         }
 
         if(isNew){
@@ -53,7 +53,7 @@ const TaskModalForm = (
         onClose();
     }
 
-    const categoryName = categories.find(c => c.id === data.kategorija)?.naziv || '';  
+    const categoryName = categories.find(c => c.id === data.category_id)?.name || '';  
     
   return (
     <div className='modal'>
@@ -62,18 +62,18 @@ const TaskModalForm = (
             
             <input 
                 className='input' 
-                name='naziv' 
-                value={data.naziv} 
-                onChange={e => setData({...data, naziv:e.target.value})}
+                name='name' 
+                value={data.name} 
+                onChange={e => setData({...data, name:e.target.value})}
                 placeholder='Naziv'
                 readOnly={!isEditing}
             />
 
             <textarea 
                 className='textarea'
-                name='opis'
-                value={data.opis}
-                onChange={e => setData({...data, opis:e.target.value})}
+                name='description'
+                value={data.description}
+                onChange={e => setData({...data, description:e.target.value})}
                 placeholder='Opis'
                 rows={4}
                 readOnly={!isEditing}
@@ -82,9 +82,9 @@ const TaskModalForm = (
             <label>Rok:
                 <input 
                 type='date'
-                name='rok'
-                value={data.rok}
-                onChange={e => setData({...data, rok:e.target.value})}
+                name='due_date'
+                value={data.due_date}
+                onChange={e => setData({...data, due_date:e.target.value})}
                 disabled={!isEditing} 
                 />
             </label>
@@ -97,16 +97,16 @@ const TaskModalForm = (
 
             <label>Prioritet:</label>
             <Buttons items={priority} 
-                    selected={data.prioritet} 
-                    setSelected={val=>setData({...data, prioritet:val})} 
+                    selected={data.priority} 
+                    setSelected={val=>setData({...data, priority:val})} 
                     disabled={!isEditing}/>
 
             <label>Kategorija:</label>
-            <Buttons items={categories.map(c => c.naziv)} 
+            <Buttons items={categories.map(c => c.name)} 
                     selected={categoryName} 
-                    setSelected={(name) => {
-                        const cat = categories.find(c => c.naziv === name)
-                        setData({...data, kategorija: cat?.id || null})}}
+                    setSelected={(cat_name) => {
+                        const cat = categories.find(c => c.name === cat_name)
+                        setData({...data, category_id: cat?.id || ''})}}
                     disabled={!isEditing}/>
         
             <div className='buttons'>

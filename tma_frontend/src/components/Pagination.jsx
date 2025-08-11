@@ -7,14 +7,15 @@ const Pagination = ({currentPage, totalItems, itemsPerPage, onPageChange}) => {
     
     return (
         <div className='pagination'>
-            {[...Array(totalPages).keys()].map(i => (
-                <button
-                    key={i}
-                    className={i === currentPage ? 'active-page' : ''}
-                    onClick={()=>onPageChange(i)}>
-                        {i + 1}
+            {[...Array(totalPages).keys()].map(i => {
+                const page = i+1;
+                return (<button
+                    key={page}
+                    className={page === currentPage ? 'active-page' : ''}
+                    onClick={()=>onPageChange(page)}>
+                        {page}
                 </button>
-            ))}
+            )})}
         </div>
     )
 }

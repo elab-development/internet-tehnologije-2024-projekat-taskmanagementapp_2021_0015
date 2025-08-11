@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('tasks', function (Blueprint $table) {
-            $table->foreignId('category_id')->constrained('categories','id');
+            $table->foreignId('category_id')->nullable()->constrained('categories','id')->nullOnDelete();
             $table->string('status');
             $table->foreign('status')->references('name')->on('statuses');
             $table->string('priority');

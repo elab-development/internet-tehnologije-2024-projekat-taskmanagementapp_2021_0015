@@ -13,7 +13,7 @@ const MultiSelectButtons = ({items, selected = [], onToggle, disabled=[]}) => {
                     className={`btn-task ${isSelected ? 'active' : ''}`}
                     disabled={isDisabled}
                 >
-                        {val.naziv}
+                        {val.name}
                 </button>
             );
         })}

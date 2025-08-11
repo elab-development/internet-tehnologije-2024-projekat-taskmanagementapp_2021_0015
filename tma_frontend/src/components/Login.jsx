@@ -4,26 +4,24 @@ import {useAuth} from '../AuthContext';
 import { useNavigate } from 'react-router-dom';
 import '../css/Login.css';
 
-const Login = ({users}) => {
+const Login = () => {
     const {login} = useAuth();
     const navigate = useNavigate();
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleSubmit = e => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const found = users.find(user => 
-            user.username === username && user.password === password
-        );
+        const found = await login(username, password);
 
         if(found){
-            login(found);
             navigate('/tasks');
         }else {
             alert('Pogresno korisnicko ime ili lozinka');
         }
     }
+
   return (
     <div className='form-container'>
         <div className='logo'>

@@ -10,11 +10,20 @@ use Illuminate\Support\Facades\Validator;
 
 class TaskListController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $user_id = Auth::id();
-        $task_lists = TaskList::where('user_id',$user_id)->get();
-        return TaskListResource::collection($task_lists);
+        $user = Auth::user();
+        $query = TaskList::where('user_id',$user->id);
+
+        $perPage = (int) $request->query('per_page', 6);
+        $tasks = $query->paginate($perPage);
+     
+        return response()->json([
+            'task_lists' => TaskListResource::collection($tasks),
+            'current_page' => $tasks -> currentPage(),
+            'total' => $tasks -> total(),
+            'last_page' => $tasks -> lastPage()
+        ]); 
     }
 
     public function show($task_list_id)
@@ -41,7 +50,8 @@ class TaskListController extends Controller
             'user_id' => Auth::user()->id
         ]);
 
-        return response()->json(['message'=>'Task list successfully created!', new TaskListResource($task_list)]);
+        return response()->json(['message'=>'Task list successfully created!', 
+                                 'task_list' => new TaskListResource($task_list)]);
     }
 
     public function update(Request $request, $task_list_id)
@@ -60,7 +70,8 @@ class TaskListController extends Controller
 
         $task_list->save();
 
-        return response()->json(['message'=>'Task list successfully updated!', new TaskListResource($task_list)]);
+        return response()->json(['message'=>'Task list successfully updated!', 
+                                 'task_list' => new TaskListResource($task_list)]);
     }
 
     public function destroy($task_list_id)

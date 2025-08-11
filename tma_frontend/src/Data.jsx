@@ -1,13 +1,11 @@
 export const zadaci = [
     {
-        id: "0",
-        naziv: "Zavrsiti online kurs o vestackoj inteligenciji",
-        opis: "Zavrsiti preostala 3 modula kursa na Courseri o osnovama AI.",
-        rok: "2025-07-31",
-        status: "U toku",
-        prioritet: "Visok",
-        kategorija: "0",
-        korisnik: 0
+        name: "Zavrsiti online kurs o vestackoj inteligenciji",
+        description: "Zavrsiti preostala 3 modula kursa na Courseri o osnovama AI.",
+        due_date: "2025-07-31",
+        status: "Active",
+        priority: "high",
+        user_id: 6
     },
     {
         id: "1",
@@ -263,48 +261,39 @@ export const zadaci = [
 
 export const kategorije = [
     {
-        id: "0",
-        naziv: "Licni razvoj",
+        name: "Licni razvoj",
         tag: "lr"
     },
     {
-        id: "1",
-        naziv: "Finansije",
+        name: "Finansije",
         tag: "fin"
     },
     {
-        id: "2",
-        naziv: "Putovanja",
+        name: "Putovanja",
         tag: "trav"
     },
     {
-        id: "3",
-        naziv: "Projekat",
+        name: "Projekat",
         tag: "proj"
     },
     {
-        id: "4",
-        naziv: "Odrzavanje",
+        name: "Odrzavanje",
         tag: "maint"
     },
     {
-        id: "5",
-        naziv: "Karijera",
+        name: "Karijera",
         tag: "career"
     },
     {
-        id: "6",
-        naziv: "Zdravlje",
+        name: "Zdravlje",
         tag: "health"
     },
     {
-        id: "7",
-        naziv: "Edukacija",
+        name: "Edukacija",
         tag: "edu"
     },
     {
-        id: "8",
-        naziv: "Domacinstvo",
+        name: "Domacinstvo",
         tag: "home"
     }
 ]

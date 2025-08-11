@@ -24,7 +24,6 @@ class TaskFactory extends Factory
             'name'=>fake()->word(),
             'description'=>fake()->sentence(),
             'due_date'=>fake()->date(),
-            'category_id'=>Category::factory(),
         ];
     }
 }

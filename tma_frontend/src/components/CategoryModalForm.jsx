@@ -3,18 +3,17 @@ import { IoCloseCircleOutline } from "react-icons/io5";
 import Buttons from './Buttons';
 import '../css/CategoryModalForm.css';
 
-const CategoryModalForm = ({categories, isNew, nextId, onAdd, onClose, onDelete}) => {
+const CategoryModalForm = ({categories, isNew, onAdd, onClose, onDelete}) => {
     const [newCategory, setNewCategory] = useState(null);
 
     useEffect(()=>{
         if(isNew){
             setNewCategory({
-                id: nextId(),
-                naziv: '',
+                name: '',
                 tag: ''
             });
         }
-    },[isNew, nextId]);
+    },[isNew]);
 
     const [categoryForDeletion, setCategoryForDeletion] = useState(null);
 
@@ -41,7 +40,7 @@ const CategoryModalForm = ({categories, isNew, nextId, onAdd, onClose, onDelete}
                 <input 
                     className='input' 
                     placeholder='Naziv kategorije'  
-                    onChange={e => setNewCategory({...newCategory, naziv:e.target.value})}
+                    onChange={e => setNewCategory({...newCategory, name:e.target.value})}
                 />
         
                 <input 
@@ -65,12 +64,12 @@ const CategoryModalForm = ({categories, isNew, nextId, onAdd, onClose, onDelete}
                 <>
                 <h3>Izaberite kategoriju za brisanje</h3>
                 <Buttons 
-                    items={categories.map(c => c.naziv)} 
+                    items={categories.map(c => c.name)} 
                     setSelected={(name) => {
-                        const chosenCategory = categories.find(c => c.naziv === name)
+                        const chosenCategory = categories.find(c => c.name === name)
                         setCategoryForDeletion(chosenCategory);
                     }} 
-                    selected={categoryForDeletion?.naziv || null}/>
+                    selected={categoryForDeletion?.name || null}/>
                     
                 <div className='buttons'>
                     <button className='btn-delete' onClick={handleDelete}>

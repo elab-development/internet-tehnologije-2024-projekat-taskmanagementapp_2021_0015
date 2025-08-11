@@ -2,8 +2,9 @@ import React, { useState } from 'react'
 import logo from '../notes-icon.png'
 import { useNavigate } from 'react-router-dom';
 import '../css/Register.css'
+import axios from 'axios';
 
-const Register = ({addUser, users}) => {
+const Register = () => {
     const navigate = useNavigate();
 
     const [ime, setIme] = useState('');
@@ -12,10 +13,10 @@ const Register = ({addUser, users}) => {
     const [password, setPassword] = useState('');
     const [passwordConfirm, setPasswordConfirm] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const nameRegex = /^[A-ZŠĐŽČĆ][a-zšđžčć]+$/;
+        const nameRegex = /^[A-Z][a-z]+$/;
 
         if(!nameRegex.test(ime)){
             alert('Ime mora pocinjati velikim slovom i sadrzati samo slova');
@@ -27,31 +28,22 @@ const Register = ({addUser, users}) => {
             return;
         }
 
-        const usernameExists = users.some(u => u.username === username);
-        if(usernameExists){
-            alert('Korisnicko ime vec postoji. Izaberite drugo.');
-            return;
-        }
-
         if(password!==passwordConfirm){
             alert('Lozinke se ne poklapaju');
             return;
         }
 
-        const maxId = users.length>0 ? Math.max(...users.map(u=>u.id)) : 0;
-        const newId = maxId+1;
-
-        const newUser = {
-            id: newId,
-            ime,
-            prezime,
+        const response = await axios.post("api/register", {
+            first_name: ime, 
+            last_name: prezime,
             username,
             password
-        }
+        });
 
-        addUser(newUser);
-        alert('Uspesna registracija! Sada se prijavite');
-        navigate('/');
+        if(response.data.success === true){
+            alert('Uspesna registracija! Sada se prijavite');
+            navigate('/');
+        }
     }
 
   return (

@@ -20,12 +20,12 @@ const Filter = ({
             <div className='kategorija'>
                 <h2>Kategorija</h2>
                 <Buttons 
-                    items={categories.map(c => c.naziv)} 
+                    items={categories.map(c => c.name)} 
                     setSelected={(naziv) => {
-                        const chosenCategory = categories.find(c => c.naziv===naziv);
+                        const chosenCategory = categories.find(c => c.name===naziv);
                         setFilterCategory(chosenCategory ? chosenCategory.id : null)
                     }} 
-                    selected={categories.find(c => c.id === filterCategory)?.naziv || null}/>
+                    selected={categories.find(c => c.id === filterCategory)?.name || null}/>
             </div>
         </div>
     </div>

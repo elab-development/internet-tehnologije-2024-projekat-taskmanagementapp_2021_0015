@@ -7,17 +7,16 @@ const Task = ({task, category, status, priority, onAdd, onUpdate, onDelete}) => 
 
   return (
     <>
-    <div className='task-card' onClick={()=>setOpen(true)}>
+    <div className='task-card' onClick={()=>{setOpen(true)}}>
         <div className='Task'>
-            <h3 className='title'>{task.naziv}</h3>
-            <p className='desc'>{task.opis}</p>
+            <h3 className='title'>{task.name}</h3>
+            <p className='desc'>{task.description}</p>
         </div>
     </div>
 
     {open && (
       <TaskModalForm
         initialData={task}
-        nextId={null}
         onAdd={onAdd}
         onUpdate={onUpdate}
         onClose={()=>setOpen(false)}
