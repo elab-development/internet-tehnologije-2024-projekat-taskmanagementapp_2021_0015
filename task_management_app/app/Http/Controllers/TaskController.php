@@ -42,6 +42,8 @@ class TaskController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create', Task::class);
+
         $validator = Validator::make($request->all(),[
             'name' => 'required|string|max:255',
             'description' => 'string|max:255|nullable',
@@ -111,8 +113,6 @@ class TaskController extends Controller
             'total' => $tasks -> total(),
             'last_page' => $tasks -> lastPage()
         ]);  
-        // $tasks = $query->get();
-        // return TaskResource::collection($tasks);
     }
 
     public function edit(Task $task)
@@ -122,6 +122,8 @@ class TaskController extends Controller
 
     public function update(Request $request, Task $task)
     {
+        $this->authorize('update',$task);
+
         $validator = Validator::make($request->all(),[
             'name' => 'required|string|max:255',
             'description' => 'string|max:255|nullable',

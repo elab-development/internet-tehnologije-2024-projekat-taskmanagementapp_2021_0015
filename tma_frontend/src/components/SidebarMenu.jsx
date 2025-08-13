@@ -2,6 +2,7 @@ import React from 'react'
 import TaskModalForm from './TaskModalForm'
 import ListModalForm from './ListModalForm'
 import CategoryModalForm from './CategoryModalForm'
+import { useAuth } from '../AuthContext'
 
 const SidebarMenu = ({
     openAddTaskMenu, setOpenAddTaskMenu,
@@ -13,6 +14,8 @@ const SidebarMenu = ({
     addCategory, deleteCategory,
     categories, status, priority
 }) => {
+    const {currentUser} = useAuth();
+    const isVerified = currentUser?.is_verified;
   return (
     <div className='menu-container'>
         <p className='option' onClick={()=>setOpenAddTaskMenu(true)}>Kreiraj zadatak</p>
@@ -28,7 +31,9 @@ const SidebarMenu = ({
                 priority={priority} 
             />
         )}
+        {Boolean(isVerified) && (
         <p className='option' onClick={()=>setOpenAddListMenu(true)}>Kreiraj listu</p>
+        )}
         {openAddListMenu && (
             <ListModalForm
                 list={null}

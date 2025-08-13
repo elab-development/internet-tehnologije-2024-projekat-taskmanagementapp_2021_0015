@@ -12,10 +12,13 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Pagination from './components/Pagination';
 import ListSidebar from './components/ListSidebar';
 import axios from 'axios';
+import Profile from './components/Profile';
 
 
 function App() {
-  const {currentUser, token} = useAuth();
+  const {currentUser, setCurrentUser, token} = useAuth();
+  const isVerified = currentUser?.is_verified;
+  const isAdmin = currentUser?.role === 'admin';
 
   const [tasks, setTasks] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -67,7 +70,7 @@ function App() {
     }
 
     const fetchLists = async() => {
-      const response = await axios.get("api/task_lists", {
+      const listsResponse = await axios.get("api/task_lists", {
         headers: { Authorization: `Bearer ${token}` },
         params: {
           page: listsCurrentPage,
@@ -75,9 +78,14 @@ function App() {
         }
       });
 
-      setLists(response.data.task_lists);
-      setListsCurrentPage(response.data.current_page);
-      setListsTotalItems(response.data.total);
+      const orderResponse = await axios.get("api/lists", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      setLists(listsResponse.data.task_lists);
+      setOrder(orderResponse.data.data.flat());
+      setListsCurrentPage(listsResponse.data.current_page);
+      setListsTotalItems(listsResponse.data.total);
 
       await fetchAllTasks();
     }
@@ -86,14 +94,12 @@ function App() {
     const fetchData = async ()=> {
       try {
         console.log("Fetch data se poziva");
-        const [orderResponse, categoriesResponse, statusResponse, priorityResponse] = await Promise.all([
-          axios.get("api/lists", {headers: { Authorization: `Bearer ${token}` }}),
+        const [categoriesResponse, statusResponse, priorityResponse] = await Promise.all([
           axios.get("api/categories", {headers: { Authorization: `Bearer ${token}` }}),
           axios.get("api/statuses"),
           axios.get("api/priorities")
         ]);
   
-        setOrder(orderResponse.data.data.flat());
         setCategories(categoriesResponse.data.data);
         setStatus(statusResponse.data.map(s => s.name));
         setPriority(priorityResponse.data.map(p => p.name));
@@ -117,8 +123,11 @@ function App() {
 
   useEffect(() => {
     if(!token) return;
-    fetchLists();
-  }, [listsCurrentPage, token]);
+    
+    if(isVerified) {
+      fetchLists();
+    }
+  }, [listsCurrentPage, token, isVerified]);
 
   const [searchTerm, setSearchTerm] = useState('');
   
@@ -144,10 +153,18 @@ function App() {
   });
 
   const addTask = async (newTask) => {
-    const response = await axios.post("api/tasks", newTask, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    fetchTasks()
+    try {
+      const response = await axios.post("api/tasks", newTask, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      fetchTasks()
+    } catch (error) {
+      if(error.response && error.response.status === 403){
+        alert("Dostignut limit od 20 zadataka. Izvrsite verifikaciju i otkljucajte sve funkcionalnosti.");
+      }else{
+        console.error(error);
+      }
+    }
   }
 
   const updateTask = async (updatedTask) => {
@@ -155,10 +172,14 @@ function App() {
       const response = await axios.put("api/tasks/"+ updatedTask.id, updatedTask,{
         headers: { Authorization: `Bearer ${token}` }
       });
-      const updated = response.data.task;
+      
       fetchTasks();
     } catch (error) {
-      console.error("Greska pri update-u:", error);
+      if(error.response && error.response.status === 403){
+        alert("Ne mozete da azurirate zadatke dok se ne verifikujete.");
+      }else{
+        console.error(error);
+      }
     }
   }
   
@@ -275,6 +296,13 @@ function App() {
     setAllTasks(response.data.tasks);
   }
 
+  const updateProfile = async (updatedUser) => {
+    const response = await axios.put("api/user", updatedUser, {
+      headers: { Authorization: `Bearer ${token}`}
+    })
+    setCurrentUser(response.data.user);
+  }
+
   return (
     <BrowserRouter>
      <div>
@@ -350,6 +378,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        {isVerified && (
         <Route
           path = '/lists'
           element = {
@@ -389,6 +418,21 @@ function App() {
                 />
               </div>
             </>
+            </ProtectedRoute>
+          }
+        />)}
+        <Route
+          path='profile'
+          element={
+            <ProtectedRoute>
+              <>
+                <div className='header'>
+                  <NavBar type={'normal'}/>
+                </div>
+                <div className='login-page'>
+                  <Profile onUpdate={updateProfile}/>
+                </div>
+              </>
             </ProtectedRoute>
           }
         />

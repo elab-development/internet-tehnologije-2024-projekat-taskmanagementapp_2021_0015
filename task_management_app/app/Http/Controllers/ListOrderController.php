@@ -52,10 +52,8 @@ class ListOrderController extends Controller
             return response()->json($validator->errors());
         }
 
-        $list = TaskList::find($request->task_list_id);
-        if(!$list || $list->user_id !==Auth::id()){
-            return response()->json(['message'=>'Error']);
-        }
+        $list = TaskList::findOrFail($request->task_list_id);
+        $this -> authorize('update',$list);
 
         $maxNum = $list->tasks()->max('num') ?? 0;
         
@@ -70,10 +68,8 @@ class ListOrderController extends Controller
 
     public function removeTask($task_list_id,$task_id){
 
-        $list = TaskList::find($task_list_id);
-        if(!$list || $list->user_id !==Auth::id()){
-            return response()->json(['message'=>'Error']);
-        }
+        $list = TaskList::findOrFail($task_list_id);
+        $this->authorize('update',$list);
 
         if(!$list->tasks()->where('task_id',$task_id)->exists()){
             return response()->json(['message'=>'Task not found']);

@@ -16,6 +16,7 @@ class AuthController extends Controller
             'first_name'=>'required|string|regex:/[A-Z][a-z]+/|max:255',
             'last_name'=>'required|string|regex:/[A-Z][a-z]+/|max:255',
             'username'=>'required|string|max:255|unique:users',
+            'email' => 'required|string|email|unique:users',
             'password'=>'required|string|min:10'
         ]);
 
@@ -27,6 +28,7 @@ class AuthController extends Controller
             'first_name'=>$request->first_name,
             'last_name'=>$request->last_name,
             'username'=>$request->username,
+            'email'=>$request->email,
             'password'=>Hash::make($request->password)
         ]);
         

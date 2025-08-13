@@ -5,7 +5,8 @@ import {useAuth} from '../AuthContext';
 import miniLogo from '../notes-icon.png';
 
 const NavBar = ({type}) => {
-  const {logout} = useAuth();
+  const {currentUser, logout} = useAuth();
+  const isVerified = currentUser?.is_verified;
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -21,7 +22,10 @@ const NavBar = ({type}) => {
           <Link to='/tasks'><h1>TaskMaster</h1></Link>
         </div>
         <div className='pages'>
-          <Link to='/lists'>Lists</Link>
+          {Boolean(isVerified) && (
+            <Link to='/lists'>Lists</Link>
+          )}
+          <Link to='/profile'>Profile</Link>
           <button className='logout-btn' onClick={handleLogout}>Logout</button>
         </div>
       </div>

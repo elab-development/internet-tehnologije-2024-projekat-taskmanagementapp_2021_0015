@@ -11,6 +11,7 @@ use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use App\Models\Priority;
 use App\Models\Status;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 
 //prikaz dostupnih statusa
@@ -60,10 +61,21 @@ Route::group(['middleware'=> ['auth:sanctum']], function(){
     Route::post('categories', [CategoryController::class, 'store']);
     Route::delete('categories/{id}',[CategoryController::class, 'destroy']);
 
+    Route::get('/random-quote', function () {
+        $response = Http::get('https://zenquotes.io/api/random');
+        return $response->json();
+    });
+
     //rute za resetovanje sifre
     Route::post('password/forgot',[PasswordController::class,'sendResetLink']);
     Route::post('password/reset',[PasswordController::class,'reset']);
 
     //logout
     Route::post('logout', [AuthController::class,'logout']);
+});
+
+Route::group(['middleware'=> ['auth:sanctum', 'admin']], function(){
+    Route::get('users', [UserController::class, 'index']);
+    Route::put('users/{id}',[UserController::class, 'update']);
+    Route::delete('users/{id}',[UserController::class, 'destroy']);
 });
