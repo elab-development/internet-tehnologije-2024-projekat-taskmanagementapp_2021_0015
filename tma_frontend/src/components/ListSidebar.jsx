@@ -3,6 +3,7 @@ import Search from './Search'
 import SidebarMenu from './SidebarMenu'
 import PlusButton from './PlusButton'
 import '../css/Sidebar.css'
+import MotivationalQuote from './MotivationalQuote'
 
 const ListSidebar = ({
     searchTerm, setSearchTerm,
@@ -20,6 +21,7 @@ const ListSidebar = ({
     <div className='sidebar'>
         <div className='search-and-filter'>
             <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
+            <MotivationalQuote />
         </div>
         <div className='plus-btn-container'>
             {openSelectMenu && (

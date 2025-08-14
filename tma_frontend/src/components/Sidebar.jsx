@@ -4,6 +4,7 @@ import Filter from './Filter'
 import '../css/Sidebar.css'
 import SidebarMenu from './SidebarMenu'
 import PlusButton from './PlusButton'
+import MotivationalQuote from './MotivationalQuote'
 
 const Sidebar = (
     {searchTerm, setSearchTerm,
@@ -14,7 +15,7 @@ const Sidebar = (
     openAddTaskMenu, setOpenAddTaskMenu,
     tasks, addTask, updateTask, deleteTask,
     openAddListMenu, setOpenAddListMenu,
-    lists, order, saveList, deleteList,
+    lists=null, order=null, saveList, deleteList,
     openAddCategoryMenu, setOpenAddCategoryMenu,
     openDeleteCategoryMenu, setOpenDeleteCategoryMenu,
     addCategory, deleteCategory
@@ -24,6 +25,7 @@ const Sidebar = (
     <div className='sidebar'>
         <div className='search-and-filter'>
             <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm}/>
+            <MotivationalQuote />
             <Filter status={status} priority={priority} categories={categories}
             filterStatus={filterStatus} filterPriority={filterPriority} filterCategory={filterCategory}
             setFilterStatus={setFilterStatus} setFilterPriority={setFilterPriority} setFilterCategory={setFilterCategory}/>
