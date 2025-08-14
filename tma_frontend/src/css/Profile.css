@@ -34,23 +34,12 @@
     font-size: medium;
 }
 
-/* .btn-verify{
-  width: 200px;
-  margin-top: 20px;
-  background-color: #D9A299;
-  height: 40px;
-  border: none;
-  border-radius: 20px;
-  transition: transform 0.3s;
-  cursor: pointer;
-} */
-
 .btn-verify:hover{
   transform: translateY(-4px);
   background-color: #8d5045;
 }
 
-.btn-verify, .btn-edit{
+.btn-verify, .btn-ep{
     padding: 10px;
     border-radius: 20px;
     background-color: #D9A299;
@@ -67,7 +56,7 @@
   pointer-events: none;
 }
 
-.btn-edit:hover{
+.btn-ep:hover{
   transform: translateY(-4px);
   background-color: #8d5045;
 }

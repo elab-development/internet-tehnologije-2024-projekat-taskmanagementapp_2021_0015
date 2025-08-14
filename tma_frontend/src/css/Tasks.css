@@ -6,14 +6,13 @@
 
 .task-card{
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   height: 140px;
   width: 300px;
   padding: 20px;
   margin: 20px;
   background-color: #F5CBCB;
   border-radius: 20px;
-  justify-content: space-evenly;
   cursor: pointer;
   user-select: none;
   transition: transform 0.15s;

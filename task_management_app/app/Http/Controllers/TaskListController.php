@@ -39,7 +39,7 @@ class TaskListController extends Controller
 
     public function store(Request $request)
     {
-        $this->authorize('view',TaskList::class);
+        $this->authorize('viewAny',TaskList::class);
         $validator = Validator::make($request->all(),[
             'name' => 'required|string|max:255',
         ]);

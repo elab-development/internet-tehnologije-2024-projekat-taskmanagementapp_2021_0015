@@ -94,11 +94,11 @@ const Profile = ({onUpdate}) => {
                     Verifikuj nalog
                 </button>
                 {isEditing ? (
-                    <button className='btn-edit' onClick={handleSave}>
+                    <button className='btn-ep' onClick={handleSave}>
                         Sačuvaj
                     </button>
                 ) : (
-                    <button className='btn-edit' onClick={handleEdit}>
+                    <button className='btn-ep' onClick={handleEdit}>
                         Izmeni
                     </button>
                 )}

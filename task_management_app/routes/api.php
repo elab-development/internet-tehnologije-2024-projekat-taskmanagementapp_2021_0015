@@ -7,8 +7,6 @@ use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TaskListController;
 use App\Http\Controllers\UserController;
-use App\Http\Resources\CategoryResource;
-use App\Models\Category;
 use App\Models\Priority;
 use App\Models\Status;
 use Illuminate\Support\Facades\Http;
@@ -30,7 +28,9 @@ Route::get('priorities', function(){
 Route::post('register',[AuthController::class,'register']);
 Route::post('login',[AuthController::class,'login']);
 
-Route::get('users',[UserController::class, 'index']);
+//rute za resetovanje sifre
+Route::post('password/forgot',[PasswordController::class,'sendResetLink']);
+Route::post('password/reset',[PasswordController::class,'reset']);
 
 Route::group(['middleware'=> ['auth:sanctum']], function(){
     //rute za prikaz, azuriranje i brisanje korisnika
@@ -65,10 +65,6 @@ Route::group(['middleware'=> ['auth:sanctum']], function(){
         $response = Http::get('https://zenquotes.io/api/random');
         return $response->json();
     });
-
-    //rute za resetovanje sifre
-    Route::post('password/forgot',[PasswordController::class,'sendResetLink']);
-    Route::post('password/reset',[PasswordController::class,'reset']);
 
     //logout
     Route::post('logout', [AuthController::class,'logout']);
