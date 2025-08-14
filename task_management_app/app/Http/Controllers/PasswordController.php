@@ -50,7 +50,7 @@ class PasswordController extends Controller
         ]);
 
         if($validator->fails()){
-            return response()->json($validator()->errors());
+            return response()->json($validator->errors());
         }
 
         $resetData = DB::table('password_reset_tokens')

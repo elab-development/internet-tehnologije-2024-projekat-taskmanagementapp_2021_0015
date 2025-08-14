@@ -3,6 +3,8 @@ import logo from '../notes-icon.png';
 import {useAuth} from '../AuthContext';
 import { useNavigate } from 'react-router-dom';
 import '../css/Login.css';
+import ForgotPassword from './ForgotPassword';
+import ResetPassword from './ResetPassword';
 
 const Login = () => {
     const {login} = useAuth();
@@ -10,6 +12,11 @@ const Login = () => {
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+
+    const [showForgotModal, setShowForgotModal] = useState(false);
+    const [showResetModal, setShowResetModal] = useState(false);
+    const [resetEmail, setResetEmail] = useState("");
+    const [resetToken, setResetToken] = useState("");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -44,8 +51,33 @@ const Login = () => {
                     onChange={e => setPassword(e.target.value)}
                 />
                 <button className='btn-login' type='submit'>Login</button>
+                <p onClick={()=>setShowForgotModal(true)}>Forgot password?</p>
             </form>
         </div>
+
+        {showForgotModal && (
+            <ForgotPassword
+                onClose={()=>setShowForgotModal(false)}
+                onTokenReceived={(email,token) => {
+                    setResetEmail(email);
+                    setResetToken(token);
+                    setShowForgotModal(false);
+                    setShowResetModal(true);
+                }}
+            />
+        )}
+
+        {showResetModal && (
+            <ResetPassword
+                email={resetEmail}
+                token={resetToken}
+                onClose={()=>setShowResetModal(false)}
+                onResetSuccess={()=>{
+                    setShowResetModal(false);
+                    alert("Lozinka izmenjena. Mozete da se ulogujete")
+                }}
+            />
+        )}
     </div>
   )
 }
