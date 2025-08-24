@@ -154,7 +154,7 @@ function App() {
 
   const addTask = async (newTask) => {
     try {
-      const response = await axios.post("api/tasks", newTask, {
+      await axios.post("api/tasks", newTask, {
         headers: { Authorization: `Bearer ${token}` }
       });
       fetchTasks()
@@ -169,7 +169,7 @@ function App() {
 
   const updateTask = async (updatedTask) => {
     try {
-      const response = await axios.put("api/tasks/"+ updatedTask.id, updatedTask,{
+      await axios.put("api/tasks/"+ updatedTask.id, updatedTask,{
         headers: { Authorization: `Bearer ${token}` }
       });
       
@@ -270,12 +270,6 @@ function App() {
     setTasks(prev => prev.map(t => t.category_id===id ? {...t,category_id:null} : t));
   }
 
-  const [openSelectMenu, setOpenSelectMenu] = useState(false);
-  const [openAddTaskMenu, setOpenAddTaskMenu] = useState(false);
-  const [openAddListMenu, setOpenAddListMenu] = useState(false);
-  const [openAddCategoryMenu, setOpenAddCategoryMenu] = useState(false);
-  const [openDeleteCategoryMenu, setOpenDeleteCategoryMenu] = useState(false);
-
   const setTaskAsDone = async (task) => {
     const updatedTask = {
       ...task,
@@ -364,13 +358,8 @@ function App() {
                   status={status} priority={priority} categories={categories}
                   filterStatus={filterStatus} filterPriority={filterPriority} filterCategory={filterCategory}
                   setFilterStatus={setFilterStatus} setFilterPriority={setFilterPriority} setFilterCategory={setFilterCategory}
-                  openSelectMenu={openSelectMenu} setOpenSelectMenu={setOpenSelectMenu}
-                  openAddTaskMenu={openAddTaskMenu} setOpenAddTaskMenu={setOpenAddTaskMenu}
-                  tasks={tasks} addTask={addTask} updateTask={updateTask} deleteTask={deleteTask}
-                  openAddListMenu={openAddListMenu} setOpenAddListMenu={setOpenAddListMenu}
+                  tasks={allTasks} addTask={addTask} updateTask={updateTask} deleteTask={deleteTask}
                   lists={lists} order={order} saveList={handleSaveList} deleteList={handleDeleteList}
-                  openAddCategoryMenu={openAddCategoryMenu} setOpenAddCategoryMenu={setOpenAddCategoryMenu}
-                  openDeleteCategoryMenu={openDeleteCategoryMenu} setOpenDeleteCategoryMenu={setOpenDeleteCategoryMenu}
                   addCategory={addCategory} deleteCategory={deleteCategory}
                 />
               </div>
@@ -407,13 +396,8 @@ function App() {
                 <ListSidebar
                   searchTerm={searchTerm} setSearchTerm={setSearchTerm}
                   status={status} priority={priority} categories={categories}
-                  openSelectMenu={openSelectMenu} setOpenSelectMenu={setOpenSelectMenu}
-                  openAddTaskMenu={openAddTaskMenu} setOpenAddTaskMenu={setOpenAddTaskMenu}
-                  tasks={tasks} addTask={addTask} updateTask={updateTask} deleteTask={deleteTask}
-                  openAddListMenu={openAddListMenu} setOpenAddListMenu={setOpenAddListMenu}
+                  tasks={allTasks} addTask={addTask} updateTask={updateTask} deleteTask={deleteTask}
                   lists={lists} order={order} saveList={handleSaveList} deleteList={handleDeleteList}
-                  openAddCategoryMenu={openAddCategoryMenu} setOpenAddCategoryMenu={setOpenAddCategoryMenu}
-                  openDeleteCategoryMenu={openDeleteCategoryMenu} setOpenDeleteCategoryMenu={setOpenDeleteCategoryMenu}
                   addCategory={addCategory} deleteCategory={deleteCategory}
                 />
               </div>

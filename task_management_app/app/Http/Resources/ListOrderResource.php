@@ -15,15 +15,6 @@ class ListOrderResource extends JsonResource
     
     public function toArray(Request $request): array
     {
-        // return [
-        //     'task_list_id' => $this->id,
-        //     'tasks' => $this->tasks->map(function($task){
-        //         return [
-        //             'rb' => $task->pivot->num,
-        //             'task' => new TaskResource($task)
-        //         ];
-        //     })
-        // ];
         return $this->tasks->map(function($task){
             return [
                 'task_list_id' => $this->id,
