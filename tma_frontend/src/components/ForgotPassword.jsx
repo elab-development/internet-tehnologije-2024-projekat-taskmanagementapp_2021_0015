@@ -35,7 +35,7 @@ const ForgotPassword = ({onClose, onTokenReceived}) => {
             />
             <div className='buttons'>
                 <button className='btn-send' type='submit'>Posalji reset link</button>
-                <button className='btn-cancel' onClick={onclose}>Otkazi</button>
+                <button className='btn-cancel' onClick={onClose}>Otkazi</button>
             </div>
             {message && <p>{message}</p>}
         </form>
