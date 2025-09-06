@@ -1,0 +1,47 @@
+.NavBar{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 50px;
+    background-color: #D9A299;
+    border-bottom-style: double;
+    border-bottom-color: #AA7C8C;
+}
+
+.NavBar h1{
+    font-style: italic;
+    color: black;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.NavBar a{
+    text-decoration: none;
+    color: black;
+}
+
+.app-title{
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+}
+
+.pages{
+    height: 50px;
+    display: flex;
+    align-items: center;
+    column-gap: 15px;
+    padding: 10px;
+    font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.logout-btn{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 20px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}

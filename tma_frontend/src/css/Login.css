@@ -1,0 +1,116 @@
+.form-container{
+    background-color: #F5CBCB;
+    height: 580px;
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.login-form{
+    width: 100%;
+}
+
+.login-form form{
+    width:100%;
+    font-family: Arial, Helvetica, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.login-form p{
+    margin-top: 10px;
+    color: rgb(88, 84, 84);
+    cursor: pointer; 
+}
+
+.login-form p:hover{
+    color: rgb(2, 2, 81);
+    text-decoration: underline;
+}
+
+.input{
+    height: 40px;
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-style: solid;
+    outline: none;
+    border-color: #8d5045;
+    border-radius: 20px;
+    background-color: transparent;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: medium;
+}
+
+.btn-login{
+    width: 200px;
+    margin-top: 20px;
+    background-color: #D9A299;
+    height: 40px;
+    border: none;
+    border-radius: 20px;
+    transition: transform 0.3s;
+    cursor: pointer;
+}
+
+.btn-login:hover{
+    transform: translateY(-4px);
+    background-color: #8d5045;
+}
+
+.logo{
+     margin-bottom: 20px;
+}
+
+.modal{
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.fp-container, .rp-container{
+    display: flex;
+    flex-direction: column;;
+    background: #F5CBCB;
+    padding: 20px;
+    border-radius: 20px;
+    max-width: 420px;
+    width: 90%;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.fp-container form, .rp-container form{
+    width:100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.fp-container h3, .rp-container h2{
+    margin-bottom: 20px;
+}
+
+.btn-send, .btn-cancel, .btn-save{
+    padding: 10px;
+    border-radius: 20px;
+    background-color: #D9A299;
+    border-style: none;
+    margin-right:10px;
+    margin-bottom: 10px;
+    font-size: medium;
+    cursor: pointer;
+    width: 150px;
+}
+
